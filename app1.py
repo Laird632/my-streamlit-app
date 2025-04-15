@@ -119,7 +119,7 @@ footer {visibility: hidden;}
 
 
 # 读取Excel文件
-file_path = 数据处理.xlsx"
+file_path = "数据处理.xlsx"
 
 # 加载数据的函数
 @st.cache_data
