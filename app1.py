@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import streamlit as st
 import pandas as pd
 from matplotlib import rcParams
+rcParams['font.family'] = 'sans-serif'  # 使用系统默认无衬线字体
+rcParams['font.sans-serif'] = ['Noto Sans CJK SC']  # 使用开源中文字体
 rcParams['font.family'] = 'Microsoft YaHei'
 # 全局设置：删除 X 轴上面的黑色横线和 Y 轴右边的黑色竖线
 rcParams['axes.spines.top'] = False
@@ -19,7 +21,7 @@ st.markdown("""
 <style>
 /* 全局样式 */
 html, body, .stApp {
-    font-family: 'Microsoft YaHei', sans-serif !important;
+    font-family: 'Noto Sans CJK SC', sans-serif !important;
     background: #f8f9fa;
 }
             
