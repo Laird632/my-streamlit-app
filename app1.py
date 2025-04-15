@@ -119,7 +119,7 @@ footer {visibility: hidden;}
 
 
 # 读取Excel文件
-file_path = r"C:\Users\Administrator\Desktop\PP\数据处理.xlsx"
+file_path = 数据处理.xlsx"
 
 # 加载数据的函数
 @st.cache_data
@@ -127,6 +127,10 @@ def load_data():
     try:
         df_robot = pd.read_excel(file_path, sheet_name="产品_扫地机器人")
         df_cleaner = pd.read_excel(file_path, sheet_name="产品_家用洗地机")
+        # 检查数据是否为空
+        if df_robot.empty or df_cleaner.empty:
+            st.error("Excel 文件存在空工作表！")
+            return pd.DataFrame(), pd.DataFrame()  # 返回空 DataFrame 避免 None
         return df_robot, df_cleaner
     except Exception as e:
         st.error(f"读取文件时出错: {e}")
