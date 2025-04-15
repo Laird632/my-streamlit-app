@@ -119,7 +119,7 @@ footer {visibility: hidden;}
 
 
 # 读取Excel文件
-file_path = r"C:\Users\Administrator\Desktop\PY\售后数据处理\数据处理.xlsx"
+file_path = r"C:\Users\Administrator\Desktop\PP\数据处理.xlsx"
 
 # 加载数据的函数
 @st.cache_data
