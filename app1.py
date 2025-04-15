@@ -1,10 +1,9 @@
+import matplotlib  # 导入 matplotlib 模块
+matplotlib.use('Agg')  # 在导入 pyplot 前设置
+import matplotlib.pyplot as plt
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
-from matplotlib.ticker import FuncFormatter
 from matplotlib import rcParams
-from scipy.signal import savgol_filter
 rcParams['font.family'] = 'Microsoft YaHei'
 # 全局设置：删除 X 轴上面的黑色横线和 Y 轴右边的黑色竖线
 rcParams['axes.spines.top'] = False
