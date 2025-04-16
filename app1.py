@@ -4,33 +4,22 @@ import matplotlib.pyplot as plt
 import streamlit as st
 import pandas as pd
 from matplotlib import rcParams
-from matplotlib import font_manager  # 用于加载字体
-
-# 加载中文字体，确保字体文件存在于服务器上
-font_path = "/usr/share/fonts/truetype/simhei.ttf"  # SimHei 字体路径（需要部署时检查路径）
-try:
-    # 确保字体文件存在
-    custom_font = font_manager.FontProperties(fname=font_path)
-    rcParams['font.family'] = custom_font.get_name()
-except Exception as e:
-    st.error(f"加载字体失败: {e}")
-    rcParams['font.family'] = 'sans-serif'  # 备用字体
-
+rcParams['font.family'] = 'Microsoft YaHei'
 # 全局设置：删除 X 轴上面的黑色横线和 Y 轴右边的黑色竖线
 rcParams['axes.spines.top'] = False
 rcParams['axes.spines.right'] = False
 
-##### 运行 streamlit run C:\Users\11414\Desktop\PY\app1.py ------
+#####  运行 streamlit run C:\Users\11414\Desktop\PY\app1.py   --------------------------------------------------
 
 # 设置页面布局
 st.set_page_config(layout="wide")
-
+import streamlit as st
 # 在页面最顶部注入 CSS
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400&display=swap');
 html, body, .stApp {
-    font-family: 'Noto Sans SC', sans-serif !important;  /* 设置整体字体为 Noto Sans SC */
+    font-family: 'Microsoft YaHei', sans-serif !important;  /* 设置整体字体为微软雅黑 */
     background: #f8f9fa;  /* 设置背景为浅灰色 */
 }
             
@@ -39,7 +28,7 @@ h1 {
     text-shadow: 2px 2px 4px rgba(0,0,0,0.1);  /* 设置阴影 */
     border-bottom: 3px solid #e74c3c;  /* 设置下划线颜色 */
     margin-bottom: 3rem !important;  /* 设置下划线间距 */
-    margin-top: -80px !important;
+    margin-top: -80px !important;  # 关键调整  --------------------------------------------------------------------------------------------------------------------
 }
 
 /* 按钮美化 */
@@ -49,7 +38,7 @@ h1 {
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);  /* 设置阴影 */
     transition: all 0.3s ease;  /* 设置过渡效果 */
     border-radius: 8px !important;  /* 设置圆角 */
-    margin-top: -5px !important;
+    margin-top: -5px !important;  # 关键调整  ------------------------------------------------------------------------------
 }
 
 .stButton > button:hover {
@@ -62,7 +51,18 @@ h1 {
     background: linear-gradient(145deg, #2c3e50, #34495e) !important;  /* 设置渐变色 */
     color: white !important;  /* 设置文本颜色 */
     box-shadow: 5px 0 15px rgba(0,0,0,0.1);  /* 设置阴影 */
-    margin-top: -30px !important;
+    margin-top: -30px !important;   # 关键调整  ------------------------------------------------------------------------------
+}
+
+.sidebar .sidebar-content {
+    padding: 2rem 1rem !important;  /* 设置侧边栏内边距 */
+}
+
+/* 筛选框样式 */
+.stSelectbox label,
+.stSlider label {
+    color: #ecf0f1 !important;  /* 设置文本颜色 */
+    font-weight: 600 !important;  /* 设置字体粗细 */
 }
 
 /* 图表容器美化 */
@@ -82,6 +82,19 @@ h1 {
     overflow: hidden;         /* 隐藏超出容器的内容 */
 }
 
+/* 副标题样式 */
+h3 {
+    color: #2c3e50 !important;  /* 设置文本颜色 */
+    margin-top: 2rem !important;  /* 设置上边距 */
+    padding-left: 1rem;          /* 设置左边距 */
+    border-left: 4px solid #e74c3c;  /* 设置左边框颜色 */
+}
+
+/* 隐藏默认元素 */
+footer {visibility: hidden;}
+.stDeployButton {display:none;}
+#MainMenu {visibility: hidden;}
+
 /* 响应式布局优化 */
 @media (max-width: 768px) {
     .stPlotlyChart {
@@ -89,6 +102,8 @@ h1 {
         margin: 1rem auto;  /* 设置自动居中 */
     }
 }
+      
+
 
 /* 减小顶部白色区域的高度 */
 .stApp > header {
@@ -96,12 +111,16 @@ h1 {
     padding: 10px 0; /* 调整内边距 */
 }                                 
             
-</style>
 """, unsafe_allow_html=True)
 
-# 加载 Excel 数据并缓存
+# 以下是你原有的代码...
+
+
+
+# 读取Excel文件
 file_path = r"数据处理.xlsx"
 
+# 加载数据的函数
 @st.cache_data
 def load_data():
     try:
@@ -116,12 +135,10 @@ df_robot, df_cleaner = load_data()
 
 # 主标题样式
 st.markdown("""
-    <h1 style='font-family:"Noto Sans SC"; color:red; font-size:80px; text-align:center;'>
+    <h1 style='font-family:"Microsoft YaHei"; color:red; font-size:40px; text-align:center;'>
         《石头售后质量一览》
     </h1>
 """, unsafe_allow_html=True)
-
-# ... 其余代码保持一致
 
 # 产品类型选择
 col1, col2 = st.columns(2)
@@ -243,8 +260,8 @@ with st.sidebar:
 
 
 # 定义一个函数来统一设置图表样式
+
 def set_chart_style(ax1, ax2, title, xlabel, ylabel1, ylabel2):
-    plt.rcParams['font.family'] = 'SimHei'  # Ensure the font supports Chinese
     ax1.set_xlabel(xlabel, fontsize=12)
     ax1.set_ylabel(ylabel1, color='tab:blue', fontsize=12)
     ax2.set_ylabel(ylabel2, color='tab:red', fontsize=12)
