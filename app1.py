@@ -4,17 +4,7 @@ import matplotlib.pyplot as plt
 import streamlit as st
 import pandas as pd
 from matplotlib import rcParams
-# 2. 定义无衬线字体族的优先级列表
-rcParams['font.sans-serif'] = [
-    'Noto Sans CJK SC',  # 思源黑体（中文字体）
-    'Arial',             # 英文备选字体
-    'DejaVu Sans'        # 跨平台兼容字体
-]
- 
-# 3. 可选：解决负号显示问题 
-rcParams['axes.unicode_minus'] = False  # 防止负号显示为方块
-
-
+rcParams['font.family'] = 'Microsoft YaHei'
 # 全局设置：删除 X 轴上面的黑色横线和 Y 轴右边的黑色竖线
 rcParams['axes.spines.top'] = False
 rcParams['axes.spines.right'] = False
@@ -27,78 +17,77 @@ import streamlit as st
 # 在页面最顶部注入 CSS
 st.markdown("""
 <style>
-/* 全局样式 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400&display=swap');
 html, body, .stApp {
-    font-family: 'Noto Sans CJK SC', sans-serif !important;
-    background: #f8f9fa;
+    font-family: 'Noto Sans', sans-serif !important;
+    background: #f8f9fa;  /* 设置背景为浅灰色 */
 }
             
 /* 主标题强化 */
 h1 {
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-    border-bottom: 3px solid #e74c3c;
-    padding-bottom: 10px;
-    margin-bottom: 2rem !important;
-    margin-top: -70px !important;  # 关键调整  --------------------------------------------------------------------------------------------------------------------
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);  /* 设置阴影 */
+    border-bottom: 3px solid #e74c3c;  /* 设置下划线颜色 */
+    margin-bottom: 3rem !important;  /* 设置下划线间距 */
+    margin-top: -80px !important;  # 关键调整  --------------------------------------------------------------------------------------------------------------------
 }
 
 /* 按钮美化 */
 .stButton > button {
-    background: linear-gradient(45deg, #e74c3c, #c0392b) !important;
-    border: none !important;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-    border-radius: 8px !important;
+    background: linear-gradient(45deg, #e74c3c, #c0392b) !important;  /* 设置渐变色 */
+    border: none !important;  /* 设置无边框 */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);  /* 设置阴影 */
+    transition: all 0.3s ease;  /* 设置过渡效果 */
+    border-radius: 8px !important;  /* 设置圆角 */
     margin-top: -5px !important;  # 关键调整  ------------------------------------------------------------------------------
 }
 
 .stButton > button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 8px rgba(0,0,0,0.2);
+    transform: translateY(-2px);  /* 设置悬停效果 */
+    box-shadow: 0 6px 8px rgba(0,0,0,0.2);  /* 设置阴影 */
 }
 
 /* 侧边栏深度美化 */
 [data-testid="stSidebar"] {
-    background: linear-gradient(145deg, #2c3e50, #34495e) !important;
-    color: white !important;
-    box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+    background: linear-gradient(145deg, #2c3e50, #34495e) !important;  /* 设置渐变色 */
+    color: white !important;  /* 设置文本颜色 */
+    box-shadow: 5px 0 15px rgba(0,0,0,0.1);  /* 设置阴影 */
     margin-top: -30px !important;   # 关键调整  ------------------------------------------------------------------------------
 }
 
 .sidebar .sidebar-content {
-    padding: 2rem 1rem !important;
+    padding: 2rem 1rem !important;  /* 设置侧边栏内边距 */
 }
 
 /* 筛选框样式 */
 .stSelectbox label,
 .stSlider label {
-    color: #ecf0f1 !important;
-    font-weight: 600 !important;
+    color: #ecf0f1 !important;  /* 设置文本颜色 */
+    font-weight: 600 !important;  /* 设置字体粗细 */
 }
 
 /* 图表容器美化 */
 .stPlotlyChart,
 .stDataFrame {
-    background: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    margin: 1.5rem 0;
-    border: 1px solid #dee2e6;
+    background: white;       /* 设置背景为纯白色 */
+    border-radius: 12px;     /* 设置圆角 */
+    padding: 1.5rem;        /* 设置内边距 */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* 设置阴影 */
+    margin: 1.5rem 0;       /* 设置外边距 */
+    border: 1px solid #dee2e6; /* 设置边框 */
 }
 
 /* 数据表格优化 */
 .stDataFrame {
-    border-radius: 8px;
-    overflow: hidden;
+    border-radius: 8px;       /* 设置圆角 */
+    overflow: hidden;         /* 隐藏超出容器的内容 */
 }
 
 /* 副标题样式 */
 h3 {
-    color: #2c3e50 !important;
-    margin-top: 2rem !important;
-    padding-left: 1rem;
-    border-left: 4px solid #e74c3c;
+    color: #2c3e50 !important;  /* 设置文本颜色 */
+    margin-top: 2rem !important;  /* 设置上边距 */
+    padding-left: 1rem;          /* 设置左边距 */
+    border-left: 4px solid #e74c3c;  /* 设置左边框颜色 */
 }
 
 /* 隐藏默认元素 */
@@ -109,8 +98,8 @@ footer {visibility: hidden;}
 /* 响应式布局优化 */
 @media (max-width: 768px) {
     .stPlotlyChart {
-        max-width: 95%;
-        margin: 1rem auto;
+        max-width: 95%;  /* 设置最大宽度 */
+        margin: 1rem auto;  /* 设置自动居中 */
     }
 }
       
@@ -129,7 +118,7 @@ footer {visibility: hidden;}
 
 
 # 读取Excel文件
-file_path = "数据处理.xlsx"
+file_path = r"C:\Users\Administrator\Desktop\PY\售后数据处理\数据处理.xlsx"
 
 # 加载数据的函数
 @st.cache_data
@@ -137,10 +126,6 @@ def load_data():
     try:
         df_robot = pd.read_excel(file_path, sheet_name="产品_扫地机器人")
         df_cleaner = pd.read_excel(file_path, sheet_name="产品_家用洗地机")
-        # 检查数据是否为空
-        if df_robot.empty or df_cleaner.empty:
-            st.error("Excel 文件存在空工作表！")
-            return pd.DataFrame(), pd.DataFrame()  # 返回空 DataFrame 避免 None
         return df_robot, df_cleaner
     except Exception as e:
         st.error(f"读取文件时出错: {e}")
@@ -150,7 +135,7 @@ df_robot, df_cleaner = load_data()
 
 # 主标题样式
 st.markdown("""
-    <h1 style='font-family:"Noto Sans CJK SC"; color:red; font-size:40px; text-align:center;'>
+    <h1 style='font-family:"Microsoft YaHei"; color:red; font-size:80px; text-align:center;'>
         《石头售后质量一览》
     </h1>
 """, unsafe_allow_html=True)
@@ -386,10 +371,14 @@ if start_week != '全选' and end_week != '全选':
 
 # 如果未选择故障部位标签，展示故障部位标签的 TOP10
 if selected_fault_tag == '全选':
-    st.subheader("故障部位-Top10")
+    st.subheader("整机故障-Top10")  # 修改标题
 
     # 过滤掉"用户体验"相关的故障部位标签
     filtered_df_exclude_ux = product_series_filtered_df[~product_series_filtered_df['故障部位标签'].str.contains('用户体验', case=False, na=False)]
+
+    # 如果选择了扫地机器人，进一步排除包含"基站"的故障部位标签
+    if st.session_state.product_type == "产品_扫地机器人":
+        filtered_df_exclude_ux = filtered_df_exclude_ux[~filtered_df_exclude_ux['故障部位标签'].str.contains('基站', case=False, na=False)]
 
     # 按故障部位标签分组
     fault_tag_data = filtered_df_exclude_ux.groupby('故障部位标签').agg(
@@ -427,7 +416,7 @@ if selected_fault_tag == '全选':
     ax2.set_ylabel('AFR (%)', color='tab:red', fontsize=12)
 
     # 设置标题
-    plt.title('故障部位 - Top10', fontsize=16)
+    plt.title('整机故障 - Top10', fontsize=16)  # 修改标题
 
     # 添加图例
     ax1.legend(loc='upper left', fontsize=10)
@@ -445,6 +434,66 @@ if selected_fault_tag == '全选':
 
     # 显示图表
     st.pyplot(fig3)
+
+    # 新增桩故障-Top10图表--------------------------------------------------------------------------------------------------------------------------
+    if st.session_state.product_type == "产品_扫地机器人":  # 仅在选择扫地机器人时显示
+        st.subheader("桩故障-Top10")
+
+        # 仅选择带有"基站"字段的故障部位标签
+        filtered_df_base_station = product_series_filtered_df[product_series_filtered_df['故障部位标签'].str.contains('基站', case=False, na=False)]
+
+        # 按故障现象分组
+        fault_phenomenon_data = filtered_df_base_station.groupby('故障现象').agg(
+            故障数=('故障数', 'count'),
+            累计销量=('累计销量', 'first')
+        ).reset_index()
+
+        # 计算AFR
+        fault_phenomenon_data['AFR'] = (fault_phenomenon_data['故障数'] / fault_phenomenon_data['累计销量']) * 100
+
+        # 按故障数排序并取Top10
+        fault_phenomenon_data = fault_phenomenon_data.sort_values(by='故障数', ascending=False).head(10)
+
+        # 创建图表
+        fig4, ax = plt.subplots(figsize=(12, 6))
+        bars = ax.bar(fault_phenomenon_data['故障现象'], fault_phenomenon_data['故障数'], color='tab:blue', alpha=0.6, label='故障数')
+
+        # 为柱状图添加数据标签 - 居中
+        for bar in bars:
+            height = bar.get_height()
+            ax.text(bar.get_x() + bar.get_width()/2., height/2, f'{height}',
+                    ha='center', va='center', color='white', fontweight='bold')
+
+        # 创建次坐标轴
+        ax2 = ax.twinx()
+        line = ax2.plot(fault_phenomenon_data['故障现象'], fault_phenomenon_data['AFR'], color='tab:red', marker='o', label='AFR (%)')
+
+        # 为折线图添加数据标签
+        for x, y in zip(fault_phenomenon_data['故障现象'], fault_phenomenon_data['AFR']):
+            ax2.text(x, y, f"{y:.2f}%", ha='center', va='bottom')
+
+        # 格式化
+        ax.set_xlabel('故障现象', fontsize=12)
+        ax.set_ylabel('故障数', color='tab:blue', fontsize=12)
+        ax2.set_ylabel('AFR (%)', color='tab:red', fontsize=12)
+
+        # 设置标题
+        plt.title('桩故障 - Top10', fontsize=16)
+
+        # 添加图例
+        ax.legend(loc='upper left', fontsize=10)
+        ax2.legend(loc='upper right', fontsize=10)
+
+        # 坐标轴45°设置
+        plt.xticks(rotation=45, ha='right')  # 旋转 45°，并右对齐
+        ax.set_xticks(range(len(fault_phenomenon_data['故障现象'])))  # 确保 X 轴刻度正确
+        ax.set_xticklabels(fault_phenomenon_data['故障现象'], rotation=45, ha='right')
+
+        # 调整布局以适应图表
+        plt.tight_layout()
+
+        # 显示图表
+        st.pyplot(fig4)
 
 # 如果选择了故障部位标签，展示故障现象的 TOP10
 else:
