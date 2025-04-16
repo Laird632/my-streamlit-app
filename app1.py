@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import streamlit as st
 import pandas as pd
 from matplotlib import rcParams
-rcParams['font.family'] = 'sans-serif'
+rcParams['font.family'] = 'Microsoft YaHei'
 # 全局设置：删除 X 轴上面的黑色横线和 Y 轴右边的黑色竖线
 rcParams['axes.spines.top'] = False
 rcParams['axes.spines.right'] = False
@@ -19,7 +19,7 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400&display=swap');
 html, body, .stApp {
-    font-family: 'Noto Sans', sans-serif !important;
+    font-family: 'Microsoft YaHei', sans-serif !important;  /* 设置整体字体为微软雅黑 */
     background: #f8f9fa;  /* 设置背景为浅灰色 */
 }
             
@@ -135,7 +135,7 @@ df_robot, df_cleaner = load_data()
 
 # 主标题样式
 st.markdown("""
-    <h1 style='font-family:"sans-serif"; color:red; font-size:80px; text-align:center;'>
+    <h1 style='font-family:"Microsoft YaHei"; color:red; font-size:80px; text-align:center;'>
         《石头售后质量一览》
     </h1>
 """, unsafe_allow_html=True)
@@ -172,7 +172,11 @@ with st.sidebar:
         </style>
     """, unsafe_allow_html=True)
     
-    st.header("筛选条件")
+    # Update the header based on the selected product type
+    if st.session_state.product_type == "产品_扫地机器人":
+        st.header("扫地机-产品系列")
+    else:
+        st.header("洗地机-产品系列")
     
     # 产品系列筛选
     product_series_options = ['全选'] + sorted(df['产品系列'].unique().tolist())
@@ -256,8 +260,8 @@ with st.sidebar:
 
 
 # 定义一个函数来统一设置图表样式
-
 def set_chart_style(ax1, ax2, title, xlabel, ylabel1, ylabel2):
+    plt.rcParams['font.family'] = 'Microsoft YaHei'  # Ensure the font supports Chinese
     ax1.set_xlabel(xlabel, fontsize=12)
     ax1.set_ylabel(ylabel1, color='tab:blue', fontsize=12)
     ax2.set_ylabel(ylabel2, color='tab:red', fontsize=12)
@@ -269,15 +273,21 @@ def set_chart_style(ax1, ax2, title, xlabel, ylabel1, ylabel2):
 
 # 使用统一的图表样式函数
 
-# 月度故障分析
+# 月度故障分析 ------------------------------------------------------------------------------------------------------
 st.subheader("月度故障 - AFR")
 monthly_data = filtered_df.groupby('创建时间').agg(
     故障数=('故障数', 'count'),
     累计销量=('累计销量', 'first')
 ).reset_index()
 monthly_data['AFR'] = (monthly_data['故障数'] / monthly_data['累计销量']) * 100
+
+# 计算整体故障数的平均值
+average_faults = monthly_data['故障数'].mean()
+# 设置柱子的颜色
+colors = ['tab:red' if count > average_faults * 1.3 else 'tab:blue' for count in monthly_data['故障数']]
+
 fig1, ax1 = plt.subplots(figsize=(12, 5))
-bars = ax1.bar(monthly_data['创建时间'].astype(str), monthly_data['故障数'], color='tab:blue', alpha=0.6, label='故障数')
+bars = ax1.bar(monthly_data['创建时间'].astype(str), monthly_data['故障数'], color=colors, alpha=0.6, label='故障数')
 for bar in bars:
     height = bar.get_height()
     ax1.text(bar.get_x() + bar.get_width()/2., height/2, f'{height}',
@@ -286,7 +296,7 @@ ax2 = ax1.twinx()
 line = ax2.plot(monthly_data['创建时间'].astype(str), monthly_data['AFR'], color='tab:red', marker='o', label='AFR (%)')
 for x, y in zip(monthly_data['创建时间'].astype(str), monthly_data['AFR']):
     ax2.text(x, y, f"{y:.3f}%", ha='center', va='bottom')  # 修改为3位小数
-set_chart_style(ax1, ax2, '月度故障 - AFR', '月度故障', '故障数', 'AFR (%)')
+set_chart_style(ax1, ax2, '月度故障 - AFR', '故障数（月份）', '故障数', 'AFR (%)')
 st.pyplot(fig1)
 
 
@@ -297,8 +307,15 @@ weekly_data = filtered_df.groupby('故障周数').agg(
     累计销量=('累计销量', 'first')
 ).reset_index()
 weekly_data['AFR'] = (weekly_data['故障数'] / weekly_data['累计销量']) * 100
+
+# 计算整体故障数的平均值
+average_faults = weekly_data['故障数'].mean()
+
+# 设置柱子的颜色
+colors = ['tab:red' if count > average_faults * 1.3 else 'tab:blue' for count in weekly_data['故障数']]
+
 fig2, ax1 = plt.subplots(figsize=(12, 5))
-bars = ax1.bar(weekly_data['故障周数'].astype(str), weekly_data['故障数'], color='tab:blue', alpha=0.6, label='故障数')
+bars = ax1.bar(weekly_data['故障周数'].astype(str), weekly_data['故障数'], color=colors, alpha=0.6, label='故障数')
 for bar in bars:
     height = bar.get_height()
     ax1.text(bar.get_x() + bar.get_width()/2., height/2, f'{height}',
@@ -307,7 +324,7 @@ ax2 = ax1.twinx()
 line = ax2.plot(weekly_data['故障周数'].astype(str), weekly_data['AFR'], color='tab:red', marker='o', label='AFR (%)')
 for x, y in zip(weekly_data['故障周数'].astype(str), weekly_data['AFR']):
     ax2.text(x, y, f"{y:.3f}%", ha='center', va='bottom')  # 修改为3位小数
-set_chart_style(ax1, ax2, '周度故障 - AFR', '周度故障', '故障数', 'AFR (%)')
+set_chart_style(ax1, ax2, '周度故障 - AFR', '故障数（周度）', '故障数', 'AFR (%)')
 ax1.set_xticklabels(weekly_data['故障周数'].astype(str), rotation=45, ha='right')  # Rotate 45°, right align
 st.pyplot(fig2) 
 
@@ -319,8 +336,14 @@ weekly_data = filtered_df.groupby('生产批次').agg(
     累计销量=('累计销量', 'first')
 ).reset_index()
 weekly_data['AFR'] = (weekly_data['故障数'] / weekly_data['累计销量']) * 100
+
+# 计算整体故障数的平均值
+average_faults = weekly_data['故障数'].mean()
+# 设置柱子的颜色
+colors = ['tab:red' if count > average_faults * 1.7 else 'tab:blue' for count in weekly_data['故障数']]
+
 fig2, ax1 = plt.subplots(figsize=(12, 5))
-bars = ax1.bar(weekly_data['生产批次'].astype(str), weekly_data['故障数'], color='tab:blue', alpha=0.6, label='故障数')
+bars = ax1.bar(weekly_data['生产批次'].astype(str), weekly_data['故障数'], color=colors, alpha=0.6, label='故障数')
 for bar in bars:
     height = bar.get_height()
     ax1.text(bar.get_x() + bar.get_width()/2., height/2, f'{height}',
@@ -334,7 +357,7 @@ for x, y in zip(weekly_data['生产批次'].astype(str), weekly_data['AFR']):
 ax1.set_xticks(range(len(weekly_data['生产批次'])))  # Ensure X-axis ticks are correct
 ax1.set_xticklabels(weekly_data['生产批次'].astype(str), rotation=45, ha='right')  # Rotate 45°, right align
 
-set_chart_style(ax1, ax2, '生产故障批次 - AFR', '批次故障', '故障数', 'AFR (%)')
+set_chart_style(ax1, ax2, '生产故障批次 - AFR', '批次故障（生产周数）', '故障数', 'AFR (%)')
 st.pyplot(fig2)
 
 
