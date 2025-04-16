@@ -4,9 +4,17 @@ import matplotlib.pyplot as plt
 import streamlit as st
 import pandas as pd
 from matplotlib import rcParams
-rcParams['font.family'] = 'sans-serif'  # 使用系统默认无衬线字体
-rcParams['font.sans-serif'] = ['Noto Sans CJK SC']  # 使用开源中文字体
-rcParams['font.family'] = 'Noto Sans CJK SC'
+# 2. 定义无衬线字体族的优先级列表
+rcParams['font.sans-serif'] = [
+    'Noto Sans CJK SC',  # 思源黑体（中文字体）
+    'Arial',             # 英文备选字体
+    'DejaVu Sans'        # 跨平台兼容字体
+]
+ 
+# 3. 可选：解决负号显示问题 
+rcParams['axes.unicode_minus'] = False  # 防止负号显示为方块
+
+
 # 全局设置：删除 X 轴上面的黑色横线和 Y 轴右边的黑色竖线
 rcParams['axes.spines.top'] = False
 rcParams['axes.spines.right'] = False
