@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import streamlit as st
 import pandas as pd
 from matplotlib import rcParams
-rcParams['font.family'] = 'Microsoft YaHei'
+rcParams['font.family'] = 'SimHei'
 # 全局设置：删除 X 轴上面的黑色横线和 Y 轴右边的黑色竖线
 rcParams['axes.spines.top'] = False
 rcParams['axes.spines.right'] = False
@@ -19,7 +19,7 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400&display=swap');
 html, body, .stApp {
-    font-family: 'Microsoft YaHei', sans-serif !important;  /* 设置整体字体为微软雅黑 */
+    font-family: 'SimHei', sans-serif !important;  /* 设置整体字体为微软雅黑 */
     background: #f8f9fa;  /* 设置背景为浅灰色 */
 }
             
@@ -135,7 +135,7 @@ df_robot, df_cleaner = load_data()
 
 # 主标题样式
 st.markdown("""
-    <h1 style='font-family:"Microsoft YaHei"; color:red; font-size:80px; text-align:center;'>
+    <h1 style='font-family:"SimHei"; color:red; font-size:80px; text-align:center;'>
         《石头售后质量一览》
     </h1>
 """, unsafe_allow_html=True)
@@ -261,7 +261,7 @@ with st.sidebar:
 
 # 定义一个函数来统一设置图表样式
 def set_chart_style(ax1, ax2, title, xlabel, ylabel1, ylabel2):
-    plt.rcParams['font.family'] = 'Microsoft YaHei'  # Ensure the font supports Chinese
+    plt.rcParams['font.family'] = 'SimHei'  # Ensure the font supports Chinese
     ax1.set_xlabel(xlabel, fontsize=12)
     ax1.set_ylabel(ylabel1, color='tab:blue', fontsize=12)
     ax2.set_ylabel(ylabel2, color='tab:red', fontsize=12)
