@@ -6,7 +6,7 @@ import pandas as pd
 from matplotlib import rcParams
 rcParams['font.family'] = 'sans-serif'  # 使用系统默认无衬线字体
 rcParams['font.sans-serif'] = ['Noto Sans CJK SC']  # 使用开源中文字体
-rcParams['font.family'] = 'Microsoft YaHei'
+rcParams['font.family'] = 'Noto Sans CJK SC'
 # 全局设置：删除 X 轴上面的黑色横线和 Y 轴右边的黑色竖线
 rcParams['axes.spines.top'] = False
 rcParams['axes.spines.right'] = False
@@ -142,7 +142,7 @@ df_robot, df_cleaner = load_data()
 
 # 主标题样式
 st.markdown("""
-    <h1 style='font-family:"Microsoft YaHei"; color:red; font-size:40px; text-align:center;'>
+    <h1 style='font-family:"Noto Sans CJK SC"; color:red; font-size:40px; text-align:center;'>
         《石头售后质量一览》
     </h1>
 """, unsafe_allow_html=True)
