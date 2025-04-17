@@ -4,14 +4,20 @@ import matplotlib.pyplot as plt
 import streamlit as st
 import pandas as pd
 from matplotlib import rcParams
-rcParams['font.family'] = 'Roboto'
+from matplotlib import font_manager
+rcParams['font.family'] = 'Microsoft YaHei'
 # 全局设置：删除 X 轴上面的黑色横线和 Y 轴右边的黑色竖线
 rcParams['axes.spines.top'] = False
 rcParams['axes.spines.right'] = False
 
+# 加载微软雅黑字体
+font_path = 'msyh.ttf'  # 确保路径正确
+font_manager.fontManager.addfont(font_path)
+plt.rcParams['font.family'] = 'Microsoft YaHei'  # 设置为微软雅黑
+
 
 # 在图表库中直接设置支持的中文字体   暂定---------------------------------
-plt.rcParams['font.sans-serif'] = ['Roboto']  # 指定黑体
+plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 指定黑体
 plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
 
 
@@ -26,7 +32,7 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400&display=swap');
 html, body, .stApp {
-    font-family: 'Roboto', sans-serif !important;  /* 设置整体字体为微软雅黑 */
+    font-family: 'Microsoft YaHei', sans-serif !important;  /* 设置整体字体为微软雅黑 */
     background: #f8f9fa;  /* 设置背景为浅灰色 */
 }
             
@@ -142,7 +148,7 @@ df_robot, df_cleaner = load_data()
 
 # 主标题样式
 st.markdown("""
-    <h1 style='font-family:"Roboto"; color:red; font-size:40px; text-align:center;'>
+    <h1 style='font-family:"Microsoft YaHei"; color:red; font-size:40px; text-align:center;'>
         《石头售后质量一览》
     </h1>
 """, unsafe_allow_html=True)
