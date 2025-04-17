@@ -4,10 +4,17 @@ import matplotlib.pyplot as plt
 import streamlit as st
 import pandas as pd
 from matplotlib import rcParams
-rcParams['font.family'] = 'Songti'
+rcParams['font.family'] = 'Microsoft YaHei'
 # 全局设置：删除 X 轴上面的黑色横线和 Y 轴右边的黑色竖线
 rcParams['axes.spines.top'] = False
 rcParams['axes.spines.right'] = False
+
+
+# 在图表库中直接设置支持的中文字体   暂定---------------------------------
+plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 指定黑体
+plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
+
+
 
 #####  运行 streamlit run C:\Users\11414\Desktop\PY\app1.py   --------------------------------------------------
 
@@ -19,7 +26,7 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400&display=swap');
 html, body, .stApp {
-    font-family: 'Songti', sans-serif !important;  /* 设置整体字体为微软雅黑 */
+    font-family: 'Microsoft YaHei', sans-serif !important;  /* 设置整体字体为微软雅黑 */
     background: #f8f9fa;  /* 设置背景为浅灰色 */
 }
             
@@ -135,7 +142,7 @@ df_robot, df_cleaner = load_data()
 
 # 主标题样式
 st.markdown("""
-    <h1 style='font-family:"Songti"; color:red; font-size:40px; text-align:center;'>
+    <h1 style='font-family:"Microsoft YaHei"; color:red; font-size:40px; text-align:center;'>
         《石头售后质量一览》
     </h1>
 """, unsafe_allow_html=True)
@@ -300,7 +307,7 @@ set_chart_style(ax1, ax2, '月度故障 - AFR', '故障数（月份）', '故障
 st.pyplot(fig1)
 
 
-# 周度故障分析
+# 周度故障分析 -----------------------------------------------------------------------------------------------------
 st.subheader("周度故障 - AFR")
 weekly_data = filtered_df.groupby('故障周数').agg(
     故障数=('故障数', 'count'),
