@@ -4,16 +4,10 @@ import matplotlib.pyplot as plt
 import streamlit as st
 import pandas as pd
 from matplotlib import rcParams
-from matplotlib import font_manager
 rcParams['font.family'] = 'Microsoft YaHei'
 # 全局设置：删除 X 轴上面的黑色横线和 Y 轴右边的黑色竖线
 rcParams['axes.spines.top'] = False
 rcParams['axes.spines.right'] = False
-
-# 加载微软雅黑字体
-font_path = 'msyh.ttf'  # 确保路径正确
-font_manager.fontManager.addfont(font_path)
-plt.rcParams['font.family'] = 'Microsoft YaHei'  # 设置为微软雅黑
 
 
 # 在图表库中直接设置支持的中文字体   暂定---------------------------------
@@ -30,100 +24,128 @@ import streamlit as st
 # 在页面最顶部注入 CSS
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400&display=swap');
+/* Apple 风格整体基调 */
 html, body, .stApp {
-    font-family: 'Microsoft YaHei', sans-serif !important;  /* 设置整体字体为微软雅黑 */
-    background: #f8f9fa;  /* 设置背景为浅灰色 */
-}
-            
-/* 主标题强化 */
-h1 {
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);  /* 设置阴影 */
-    border-bottom: 3px solid #e74c3c;  /* 设置下划线颜色 */
-    margin-bottom: 3rem !important;  /* 设置下划线间距 */
-    margin-top: -80px !important;  # 关键调整  --------------------------------------------------------------------------------------------------------------------
+    font-family: 'SF Pro Display', 'San Francisco', 'Segoe UI', 'Arial', 'Microsoft YaHei', sans-serif !important;
+    background: #f5f6f7 !important;
+    color: #1d1d1f !important;
+    letter-spacing: 0.01em;
 }
 
-/* 按钮美化 */
+/* 主标题 */
+h1, .stMarkdown h1 {
+    font-size: 2.8rem !important;
+    font-weight: 700 !important;
+    color: #1d1d1f !important;
+    text-align: center;
+    margin-top: -70px !important; --------------------图表移动
+    margin-bottom: 2.5rem !important;
+    letter-spacing: -0.02em;
+    border: none !important;
+    text-shadow: none !important;
+}
+
+/* 副标题 */
+h2, h3, .stMarkdown h2, .stMarkdown h3 {
+    color: #1d1d1f !important;
+    font-weight: 600 !important;
+    border-left: 4px solid #e5e5e7;
+    padding-left: 1rem;
+    background: none !important;
+    margin-top: 2rem !important;
+    margin-bottom: 1.2rem !important;
+}
+
+/* 按钮 */
 .stButton > button {
-    background: linear-gradient(45deg, #e74c3c, #c0392b) !important;  /* 设置渐变色 */
-    border: none !important;  /* 设置无边框 */
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);  /* 设置阴影 */
-    transition: all 0.3s ease;  /* 设置过渡效果 */
-    border-radius: 8px !important;  /* 设置圆角 */
-    margin-top: -5px !important;  # 关键调整  ------------------------------------------------------------------------------
+    background: #f5f5f7 !important;
+    color: #1d1d1f !important;
+    border: 1px solid #d2d2d7 !important;
+    border-radius: 16px !important;
+    font-size: 1.1rem !important;
+    font-weight: 500 !important;
+    padding: 0.7rem 2.2rem !important;
+    box-shadow: 0 2px 8px 0 rgba(60,60,67,0.07);
+    transition: all 0.18s cubic-bezier(.4,0,.2,1);
+    margin-top: 0.5rem !important;
 }
-
 .stButton > button:hover {
-    transform: translateY(-2px);  /* 设置悬停效果 */
-    box-shadow: 0 6px 8px rgba(0,0,0,0.2);  /* 设置阴影 */
+    background: #e5e5e7 !important;
+    color: #0071e3 !important;
+    border-color: #0071e3 !important;
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 4px 16px 0 rgba(60,60,67,0.10);
 }
 
-/* 侧边栏深度美化 */
+/* 侧边栏 */
 [data-testid="stSidebar"] {
-    background: linear-gradient(145deg, #2c3e50, #34495e) !important;  /* 设置渐变色 */
-    color: white !important;  /* 设置文本颜色 */
-    box-shadow: 5px 0 15px rgba(0,0,0,0.1);  /* 设置阴影 */
-    margin-top: -30px !important;   # 关键调整  ------------------------------------------------------------------------------
+    background: #f9f9fa !important;
+    color: #1d1d1f !important;
+    border-right: 1px solid #e5e5e7 !important;
+    box-shadow: 2px 0 12px 0 rgba(60,60,67,0.04);
+    border-radius: 0 24px 24px 0;
+    padding-top: 2rem !important;
 }
-
 .sidebar .sidebar-content {
-    padding: 2rem 1rem !important;  /* 设置侧边栏内边距 */
+    padding: 2rem 1.2rem !important;
 }
 
-/* 筛选框样式 */
+/* 选择框、滑块等表单控件 */
 .stSelectbox label,
 .stSlider label {
-    color: #ecf0f1 !important;  /* 设置文本颜色 */
-    font-weight: 600 !important;  /* 设置字体粗细 */
+    color: #86868b !important;
+    font-weight: 500 !important;
+    font-size: 1.05rem !important;
+    margin-bottom: 0.2rem !important;
+}
+.stSelectbox, .stSlider, .stTextInput, .stNumberInput {
+    background: #fff !important;
+    border-radius: 12px !important;
+    border: 1px solid #e5e5e7 !important;
+    box-shadow: 0 1px 4px 0 rgba(60,60,67,0.04);
+    padding: 0.5rem 1rem !important;
 }
 
-/* 图表容器美化 */
-.stPlotlyChart,
-.stDataFrame {
-    background: white;       /* 设置背景为纯白色 */
-    border-radius: 12px;     /* 设置圆角 */
-    padding: 1.5rem;        /* 设置内边距 */
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* 设置阴影 */
-    margin: 1.5rem 0;       /* 设置外边距 */
-    border: 1px solid #dee2e6; /* 设置边框 */
+/* 图表和表格容器 */
+.stPlotlyChart, .stDataFrame, .stTable, .stAltairChart, .stPyplot {
+    background: #fff !important;
+    border-radius: 18px !important;
+    padding: 2rem 2rem 1.5rem 2rem !important;
+    box-shadow: 0 4px 24px 0 rgba(60,60,67,0.08);
+    border: 1px solid #e5e5e7 !important;
+    margin: 2rem 0 !important;
 }
 
 /* 数据表格优化 */
 .stDataFrame {
-    border-radius: 8px;       /* 设置圆角 */
-    overflow: hidden;         /* 隐藏超出容器的内容 */
-}
-
-/* 副标题样式 */
-h3 {
-    color: #2c3e50 !important;  /* 设置文本颜色 */
-    margin-top: 2rem !important;  /* 设置上边距 */
-    padding-left: 1rem;          /* 设置左边距 */
-    border-left: 4px solid #e74c3c;  /* 设置左边框颜色 */
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    font-size: 1.05rem !important;
 }
 
 /* 隐藏默认元素 */
-footer {visibility: hidden;}
-.stDeployButton {display:none;}
-#MainMenu {visibility: hidden;}
+footer, #MainMenu, .stDeployButton {display: none !important;}
 
-/* 响应式布局优化 */
-@media (max-width: 768px) {
-    .stPlotlyChart {
-        max-width: 95%;  /* 设置最大宽度 */
-        margin: 1rem auto;  /* 设置自动居中 */
+/* 响应式优化 */
+@media (max-width: 900px) {
+    .stPlotlyChart, .stDataFrame, .stTable, .stAltairChart, .stPyplot {
+        padding: 1rem !important;
+        margin: 1rem 0 !important;
+    }
+    h1, .stMarkdown h1 {
+        font-size: 2rem !important;
     }
 }
-      
 
-
-/* 减小顶部白色区域的高度 */
+/* 顶部白色区域高度减小 */
 .stApp > header {
-    height: 1px; /* 调整为你想要的高度 */
-    padding: 10px 0; /* 调整内边距 */
-}                                 
+    height: 0 !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+}
             
+</style>
 """, unsafe_allow_html=True)
 
 # 以下是你原有的代码...
@@ -148,7 +170,7 @@ df_robot, df_cleaner = load_data()
 
 # 主标题样式
 st.markdown("""
-    <h1 style='font-family:"Microsoft YaHei"; color:red; font-size:40px; text-align:center;'>
+    <h1 style='font-family:"Microsoft YaHei"; color:red; font-size:40px; text-align:center;margin-top:0.5rem;'>
         《石头售后质量一览》
     </h1>
 """, unsafe_allow_html=True)
@@ -156,9 +178,9 @@ st.markdown("""
 # 产品类型选择
 col1, col2 = st.columns(2)
 with col1:
-    robot_btn = st.button("📦 扫地机器人", use_container_width=True)
+    robot_btn = st.button("🤖 扫地机器人", use_container_width=True)
 with col2:
-    cleaner_btn = st.button("🧹 家用洗地机", use_container_width=True)
+    cleaner_btn = st.button("🧼 家用洗地机", use_container_width=True)
 
 # 初始化会话状态中的产品类型
 if 'product_type' not in st.session_state:
@@ -306,7 +328,7 @@ for bar in bars:
     ax1.text(bar.get_x() + bar.get_width()/2., height/2, f'{height}',
              ha='center', va='center', color='white', fontweight='bold')
 ax2 = ax1.twinx()
-line = ax2.plot(monthly_data['创建时间'].astype(str), monthly_data['AFR'], color='tab:red', marker='o', label='AFR (%)')
+line = ax2.plot(monthly_data['创建时间'].astype(str), monthly_data['AFR'], color='#2ca02c', marker='o', label='AFR (%)')
 for x, y in zip(monthly_data['创建时间'].astype(str), monthly_data['AFR']):
     ax2.text(x, y, f"{y:.3f}%", ha='center', va='bottom')  # 修改为3位小数
 set_chart_style(ax1, ax2, '月度故障 - AFR', '故障数（月份）', '故障数', 'AFR (%)')
@@ -334,7 +356,7 @@ for bar in bars:
     ax1.text(bar.get_x() + bar.get_width()/2., height/2, f'{height}',
              ha='center', va='center', color='white', fontweight='bold')
 ax2 = ax1.twinx()
-line = ax2.plot(weekly_data['故障周数'].astype(str), weekly_data['AFR'], color='tab:red', marker='o', label='AFR (%)')
+line = ax2.plot(weekly_data['故障周数'].astype(str), weekly_data['AFR'], color='#2ca02c', marker='o', label='AFR (%)')
 for x, y in zip(weekly_data['故障周数'].astype(str), weekly_data['AFR']):
     ax2.text(x, y, f"{y:.3f}%", ha='center', va='bottom')  # 修改为3位小数
 set_chart_style(ax1, ax2, '周度故障 - AFR', '故障数（周度）', '故障数', 'AFR (%)')
@@ -362,7 +384,7 @@ for bar in bars:
     ax1.text(bar.get_x() + bar.get_width()/2., height/2, f'{height}',
              ha='center', va='center', color='white', fontweight='bold')
 ax2 = ax1.twinx()
-line = ax2.plot(weekly_data['生产批次'].astype(str), weekly_data['AFR'], color='tab:red', marker='o', label='AFR (%)')
+line = ax2.plot(weekly_data['生产批次'].astype(str), weekly_data['AFR'], color='#2ca02c', marker='o', label='AFR (%)')
 for x, y in zip(weekly_data['生产批次'].astype(str), weekly_data['AFR']):
     ax2.text(x, y, f"{y:.2f}%", ha='center', va='bottom')
 
@@ -440,7 +462,7 @@ if selected_fault_tag == '全选':
 
     # 创建次坐标轴
     ax2 = ax1.twinx()
-    line = ax2.plot(fault_tag_data['故障部位标签'], fault_tag_data['AFR'], color='tab:red', marker='o', label='AFR (%)')
+    line = ax2.plot(fault_tag_data['故障部位标签'], fault_tag_data['AFR'], color='#2ca02c', marker='o', label='AFR (%)')
 
     # 为折线图添加数据标签
     for x, y in zip(fault_tag_data['故障部位标签'], fault_tag_data['AFR']):
@@ -502,7 +524,7 @@ if selected_fault_tag == '全选':
 
         # 创建次坐标轴
         ax2 = ax.twinx()
-        line = ax2.plot(fault_phenomenon_data['故障现象'], fault_phenomenon_data['AFR'], color='tab:red', marker='o', label='AFR (%)')
+        line = ax2.plot(fault_phenomenon_data['故障现象'], fault_phenomenon_data['AFR'], color='#2ca02c', marker='o', label='AFR (%)')
 
         # 为折线图添加数据标签
         for x, y in zip(fault_phenomenon_data['故障现象'], fault_phenomenon_data['AFR']):
@@ -605,7 +627,7 @@ for bar in bars:
             ha='center', va='center', color='white', fontweight='bold')
 
 # 格式化
-ax.set_xlabel('故障现象', fontsize=12)
+ax.set_xlabel('用户体验', fontsize=12)
 ax.set_ylabel('故障数', color='tab:blue', fontsize=12)
 
 # 设置标题
@@ -614,10 +636,9 @@ plt.title('用户体验-Top10', fontsize=16)
 # 添加图例
 ax.legend(loc='upper right', fontsize=10)
 
-# 坐标轴45°设置
-plt.xticks(rotation=45, ha='right')  # 旋转 45°，并右对齐
+# 坐标轴设置
 ax.set_xticks(range(len(ux_fault_phenomenon_data['故障现象'])))  # 确保 X 轴刻度正确
-ax.set_xticklabels(ux_fault_phenomenon_data['故障现象'], rotation=45, ha='right')
+ax.set_xticklabels(ux_fault_phenomenon_data['故障现象'], rotation=0, ha='center')  # 不旋转
 
 # 调整布局以适应图表
 plt.tight_layout()
@@ -626,6 +647,40 @@ plt.tight_layout()
 st.pyplot(fig4)
 
 
+
 # 显示筛选后的数据选项
 if st.checkbox('显示筛选后的数据'):
     st.dataframe(filtered_df)
+    if st.button('下载筛选后的数据'):
+        try:
+            export_path = r'筛选后的数据_data.xlsx'
+            filtered_df.to_excel(export_path, index=False)
+            st.success(f'筛选后的数据已成功导出到 {export_path}')
+        except Exception as e:
+            st.error(f'导出数据时出错: {e}')
+
+# 数据一键导出按钮
+if st.button('数据一键导出'):
+    try:
+        # 指定完整路径
+        export_path = r'数据信息_data.xlsx'
+        # 创建Excel文件
+        with pd.ExcelWriter(export_path) as writer:
+            # 月度故障 - AFR
+            if 'monthly_data' in globals():
+                monthly_data.to_excel(writer, sheet_name='月度故障 - AFR', index=False)
+            # 周度故障 - AFR
+            if 'weekly_data' in globals():
+                weekly_data.to_excel(writer, sheet_name='周度故障 - AFR', index=False)
+            # 生产批次故障不良 - AFR
+            if 'weekly_data' in globals():
+                weekly_data.to_excel(writer, sheet_name='生产批次故障不良 - AFR', index=False)
+            # 整机故障-Top10
+            if 'fault_tag_data' in globals():
+                fault_tag_data.to_excel(writer, sheet_name='整机故障-Top10', index=False)
+            # 用户体验-Top10
+            if 'ux_fault_phenomenon_data' in globals():
+                ux_fault_phenomenon_data.to_excel(writer, sheet_name='用户体验-Top10', index=False)
+        st.success(f'数据已成功导出到 {export_path}')
+    except Exception as e:
+        st.error(f'导出数据时出错: {e}')
