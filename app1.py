@@ -7,21 +7,15 @@ from matplotlib import rcParams
 import matplotlib.font_manager as fm
 
 # 加载本地字体
-font_path = 'msyh.ttf'  # 或者 'msyh.ttf'，确保路径正确
+font_path = 'msyh.ttf'
 my_font = fm.FontProperties(fname=font_path)
-
-# 设置 matplotlib 全局字体
-plt.rcParams['font.sans-serif'] = [my_font.get_name()]
+plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 直接写字体名
 plt.rcParams['axes.unicode_minus'] = False
-
-
-
 
 
 # 全局设置：删除 X 轴上面的黑色横线和 Y 轴右边的黑色竖线
 rcParams['axes.spines.top'] = False
 rcParams['axes.spines.right'] = False
-
 
 # 在图表库中直接设置支持的中文字体   暂定---------------------------------
 plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 指定黑体
