@@ -7,10 +7,13 @@ from matplotlib import rcParams
 import matplotlib.font_manager as fm
 
 # 加载本地字体
-font_path = 'msyh.ttf'
-my_font = fm.FontProperties(fname=font_path)
-plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 直接写字体名
-plt.rcParams['axes.unicode_minus'] = False
+font_path = 'msyh.ttf'  # 确保路径正确
+try:
+    my_font = fm.FontProperties(fname=font_path)
+    plt.rcParams['font.family'] = 'Microsoft YaHei'  # 直接使用 Microsoft YaHei
+    plt.rcParams['axes.unicode_minus'] = False
+except Exception as e:
+    st.error(f"加载字体时出错: {e}")
 
 
 # 全局设置：删除 X 轴上面的黑色横线和 Y 轴右边的黑色竖线
