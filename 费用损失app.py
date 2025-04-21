@@ -4,15 +4,17 @@ import matplotlib.pyplot as plt
 import streamlit as st
 import pandas as pd
 from matplotlib import rcParams
-rcParams['font.family'] = 'Microsoft YaHei'
+
+# 指定字体路径
+font_path = 'msyh.ttf'  # 确保路径正确，如果文件在子目录中，请提供相对路径
+
+# 加载字体
+fm.fontManager.addfont(font_path)
+
+
 # 全局设置：删除 X 轴上面的黑色横线和 Y 轴右边的黑色竖线
 rcParams['axes.spines.top'] = False
 rcParams['axes.spines.right'] = False
-
-
-# 在图表库中直接设置支持的中文字体   暂定---------------------------------
-plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 指定黑体
-plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
 
 
 
@@ -123,7 +125,7 @@ footer {visibility: hidden;}
 
 
 # 读取Excel文件
-file_path = r"C:\Users\Administrator\Desktop\PY\售后数据处理\数据处理.xlsx"
+file_path = r"数据处理.xlsx"
 
 # 加载数据的函数
 @st.cache_data
