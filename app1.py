@@ -7,18 +7,13 @@ from matplotlib import rcParams
 import matplotlib.font_manager as fm
 
 # 加载本地字体
-file_path = r"msyh.ttf"  # Path to the font file
+file_path = r"msyh.ttf" 
 try:
-    # Directly set the font path
-    font_prop = fm.FontProperties(fname=file_path)
-    plt.rcParams['font.family'] = font_prop.get_name()
-    plt.rcParams['axes.unicode_minus'] = False
-    print(f"Font loaded successfully: {font_prop.get_name()}")  # Print the loaded font name
+    font_prop = fm.FontProperties(fname=font_path)
+    rcParams['font.family'] = font_prop.get_name()
+    print(f"成功加载字体: {font_prop.get_name()}")
 except Exception as e:
-    print(f"Error loading font: {e}")
-    # Fall back to a default font if the specified font is not found
-    plt.rcParams['font.family'] = 'sans-serif'
-    plt.rcParams['axes.unicode_minus'] = False
+    print(f"加载字体失败: {e}")
 
 
 
