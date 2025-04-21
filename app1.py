@@ -23,7 +23,7 @@ rcParams['axes.spines.top'] = False
 rcParams['axes.spines.right'] = False
 
 # 设置全局字体
-plt.rcParams['font.family'] = font_prop.get_name()
+plt.rcParams['font.family'] = 'Microsoft YaHei'
 plt.rcParams['axes.unicode_minus'] = False
 
 #####  运行 streamlit run C:\Users\11414\Desktop\PY\app1.py   --------------------------------------------------
@@ -36,7 +36,7 @@ st.markdown("""
 <style>
 /* Apple 风格整体基调 */
 html, body, .stApp {
-    font-family: 'SF Pro Display', 'San Francisco', 'Segoe UI', 'Arial', 'Microsoft YaHei', sans-serif !important;
+    font-family: 'Microsoft YaHei', 'San Francisco', 'Segoe UI', 'Arial', sans-serif !important;
     background: #f5f6f7 !important;
     color: #1d1d1f !important;
     letter-spacing: 0.01em;
@@ -44,6 +44,7 @@ html, body, .stApp {
 
 /* 主标题 */
 h1, .stMarkdown h1 {
+    font-family: 'Microsoft YaHei' !important;
     font-size: 2.8rem !important;
     font-weight: 700 !important;
     color: #1d1d1f !important;
@@ -57,6 +58,7 @@ h1, .stMarkdown h1 {
 
 /* 副标题 */
 h2, h3, .stMarkdown h2, .stMarkdown h3 {
+    font-family: 'Microsoft YaHei' !important;
     color: #1d1d1f !important;
     font-weight: 600 !important;
     border-left: 4px solid #e5e5e7;
@@ -68,6 +70,7 @@ h2, h3, .stMarkdown h2, .stMarkdown h3 {
 
 /* 按钮 */
 .stButton > button {
+    font-family: 'Microsoft YaHei' !important;
     background: #f5f5f7 !important;
     color: #1d1d1f !important;
     border: 1px solid #d2d2d7 !important;
@@ -89,6 +92,7 @@ h2, h3, .stMarkdown h2, .stMarkdown h3 {
 
 /* 侧边栏 */
 [data-testid="stSidebar"] {
+    font-family: 'Microsoft YaHei' !important;
     background: #f9f9fa !important;
     color: #1d1d1f !important;
     border-right: 1px solid #e5e5e7 !important;
@@ -103,12 +107,14 @@ h2, h3, .stMarkdown h2, .stMarkdown h3 {
 /* 选择框、滑块等表单控件 */
 .stSelectbox label,
 .stSlider label {
+    font-family: 'Microsoft YaHei' !important;
     color: #86868b !important;
     font-weight: 500 !important;
     font-size: 1.05rem !important;
     margin-bottom: 0.2rem !important;
 }
 .stSelectbox, .stSlider, .stTextInput, .stNumberInput {
+    font-family: 'Microsoft YaHei' !important;
     background: #fff !important;
     border-radius: 12px !important;
     border: 1px solid #e5e5e7 !important;
@@ -118,6 +124,7 @@ h2, h3, .stMarkdown h2, .stMarkdown h3 {
 
 /* 图表和表格容器 */
 .stPlotlyChart, .stDataFrame, .stTable, .stAltairChart, .stPyplot {
+    font-family: 'Microsoft YaHei' !important;
     background: #fff !important;
     border-radius: 18px !important;
     padding: 2rem 2rem 1.5rem 2rem !important;
@@ -128,6 +135,7 @@ h2, h3, .stMarkdown h2, .stMarkdown h3 {
 
 /* 数据表格优化 */
 .stDataFrame {
+    font-family: 'Microsoft YaHei' !important;
     border-radius: 12px !important;
     overflow: hidden !important;
     font-size: 1.05rem !important;
