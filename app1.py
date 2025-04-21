@@ -10,8 +10,10 @@ import matplotlib.font_manager as fm
 file_path = r"msyh.ttf"  # 修改为相对路径
 try:
     # 直接设置字体路径
-    plt.rcParams['font.family'] = fm.FontProperties(fname=file_path).get_name()
+    font_prop = fm.FontProperties(fname=file_path)
+    plt.rcParams['font.family'] = font_prop.get_name()
     plt.rcParams['axes.unicode_minus'] = False
+    print(f"字体加载成功: {font_prop.get_name()}")  # 打印加载的字体名称
 except Exception as e:
     st.error(f"加载字体时出错: {e}")
 
@@ -21,7 +23,7 @@ rcParams['axes.spines.top'] = False
 rcParams['axes.spines.right'] = False
 
 # 设置全局字体
-plt.rcParams['font.family'] = fm.FontProperties(fname=file_path).get_name()
+plt.rcParams['font.family'] = font_prop.get_name()
 plt.rcParams['axes.unicode_minus'] = False
 
 #####  运行 streamlit run C:\Users\11414\Desktop\PY\app1.py   --------------------------------------------------
