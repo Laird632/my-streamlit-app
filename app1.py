@@ -9,7 +9,7 @@ import matplotlib.font_manager as fm
 # 加载本地字体
 file_path = r"msyh.ttf"
 try:
-    my_font = fm.FontProperties(fname=font_path)
+    my_font = fm.FontProperties(fname=file_path)
     plt.rcParams['font.family'] = 'Microsoft YaHei'  
     plt.rcParams['axes.unicode_minus'] = False
 except Exception as e:
