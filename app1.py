@@ -20,6 +20,10 @@ except Exception as e:
 rcParams['axes.spines.top'] = False
 rcParams['axes.spines.right'] = False
 
+# 设置全局字体
+plt.rcParams['font.family'] = fm.FontProperties(fname=file_path).get_name()
+plt.rcParams['axes.unicode_minus'] = False
+
 #####  运行 streamlit run C:\Users\11414\Desktop\PY\app1.py   --------------------------------------------------
 
 # 设置页面布局
