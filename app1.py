@@ -7,7 +7,7 @@ from matplotlib import rcParams
 import matplotlib.font_manager as fm
 
 # 加载本地字体
-font_path = 'msyh.ttf'  # 确保路径正确
+file_path = r"msyh.ttf" # 确保路径正确
 try:
     my_font = fm.FontProperties(fname=font_path)
     plt.rcParams['font.family'] = 'Microsoft YaHei'  # 直接使用 Microsoft YaHei
