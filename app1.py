@@ -6,16 +6,6 @@ import pandas as pd
 from matplotlib import rcParams
 import matplotlib.font_manager as fm
 
-# 加载本地字体
-file_path = r"msyh.ttf" 
-try:
-    font_prop = fm.FontProperties(fname=font_path)
-    rcParams['font.family'] = font_prop.get_name()
-    print(f"成功加载字体: {font_prop.get_name()}")
-except Exception as e:
-    print(f"加载字体失败: {e}")
-
-
 
 # 全局设置：删除 X 轴上面的黑色横线和 Y 轴右边的黑色竖线
 rcParams['axes.spines.top'] = False
