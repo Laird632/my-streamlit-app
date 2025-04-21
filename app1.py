@@ -7,10 +7,10 @@ from matplotlib import rcParams
 import matplotlib.font_manager as fm
 
 # 加载本地字体
-file_path = r"msyh.ttf" # 确保路径正确
+file_path = r"msyh.ttf"
 try:
     my_font = fm.FontProperties(fname=font_path)
-    plt.rcParams['font.family'] = 'Microsoft YaHei'  # 直接使用 Microsoft YaHei
+    plt.rcParams['font.family'] = 'Microsoft YaHei'  
     plt.rcParams['axes.unicode_minus'] = False
 except Exception as e:
     st.error(f"加载字体时出错: {e}")
@@ -19,12 +19,6 @@ except Exception as e:
 # 全局设置：删除 X 轴上面的黑色横线和 Y 轴右边的黑色竖线
 rcParams['axes.spines.top'] = False
 rcParams['axes.spines.right'] = False
-
-# 在图表库中直接设置支持的中文字体   暂定---------------------------------
-plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 指定黑体
-plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
-
-
 
 #####  运行 streamlit run C:\Users\11414\Desktop\PY\app1.py   --------------------------------------------------
 
