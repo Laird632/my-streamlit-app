@@ -7,15 +7,19 @@ from matplotlib import rcParams
 import matplotlib.font_manager as fm
 
 # 加载本地字体
-file_path = r"msyh.ttf"  # 修改为相对路径
+file_path = r"msyh.ttf"  # Path to the font file
 try:
-    # 直接设置字体路径
+    # Directly set the font path
     font_prop = fm.FontProperties(fname=file_path)
     plt.rcParams['font.family'] = font_prop.get_name()
     plt.rcParams['axes.unicode_minus'] = False
-    print(f"字体加载成功: {font_prop.get_name()}")  # 打印加载的字体名称
+    print(f"Font loaded successfully: {font_prop.get_name()}")  # Print the loaded font name
 except Exception as e:
-    st.error(f"加载字体时出错: {e}")
+    print(f"Error loading font: {e}")
+    # Fall back to a default font if the specified font is not found
+    plt.rcParams['font.family'] = 'sans-serif'
+    plt.rcParams['axes.unicode_minus'] = False
+
 
 
 # 全局设置：删除 X 轴上面的黑色横线和 Y 轴右边的黑色竖线
