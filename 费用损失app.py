@@ -17,6 +17,10 @@ fm.fontManager.addfont(font_path)
 rcParams['axes.spines.top'] = False
 rcParams['axes.spines.right'] = False
 
+# 设置全局字体
+plt.rcParams['font.family'] = 'Microsoft YaHei'
+plt.rcParams['axes.unicode_minus'] = False
+
 
 
 #####  运行 streamlit run C:\Users\11414\Desktop\PY\app1.py   --------------------------------------------------
