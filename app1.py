@@ -9,10 +9,8 @@ import matplotlib.font_manager as fm
 # 加载本地字体
 file_path = r"msyh.ttf"  # 修改为相对路径
 try:
-    # 手动加载字体
-    my_font = fm.FontProperties(fname=file_path)
-    # 将字体设置为全局默认字体
-    plt.rcParams['font.family'] = my_font.get_name()
+    # 直接设置字体路径
+    plt.rcParams['font.family'] = fm.FontProperties(fname=file_path).get_name()
     plt.rcParams['axes.unicode_minus'] = False
 except Exception as e:
     st.error(f"加载字体时出错: {e}")
