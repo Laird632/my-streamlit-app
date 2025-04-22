@@ -158,7 +158,7 @@ footer, #MainMenu, .stDeployButton {display: none !important;}
 </style>
 """, unsafe_allow_html=True)
 
-# 登录界面-------------------------
+# 登录界面
 def login():
     st.title('用户登录')
     
@@ -175,6 +175,10 @@ def login():
                 st.rerun()  # 刷新页面
             else:
                 st.error('账号或密码错误')
+
+# 初始化 session_state
+if 'logged_in' not in st.session_state:
+    st.session_state.logged_in = False
 
 # 如果未登录，显示登录界面
 if not st.session_state.logged_in:
