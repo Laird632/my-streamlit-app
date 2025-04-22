@@ -163,10 +163,10 @@ def login():
     st.title('用户登录')
     
     # 使用 st.columns 实现居中布局
-    col2 = st.columns([1, 2])  # 左列留空，中间为登录框
+    col1, col2, col3 = st.columns([1, 2, 1])  # 左右列留空，中间为登录框
     
-    # 使用 col2[1] 来访问中间列
-    with col2[1]:  # 中间列
+    # 使用 col2 来访问中间列
+    with col2:  # 中间列
         username = st.text_input('账号', key='username_input')
         password = st.text_input('密码', type='password', key='password_input')
         
