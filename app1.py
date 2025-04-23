@@ -162,7 +162,7 @@ footer, #MainMenu, .stDeployButton {display: none !important;}
 import base64
 
 # 将图片转换为 Base64 编码
-with open('C:\\\\Users\\\\Administrator\\\\Desktop\\\\PY\\\\logo.png', 'rb') as img_file:
+with open('logo.png', 'rb') as img_file:
     encoded_string = base64.b64encode(img_file.read()).decode('utf-8')
 
 st.markdown(f"""
@@ -198,7 +198,7 @@ st.markdown(f"""
 
 
 # 读取故障码查询文件
-fault_code_path = r"C:\Users\Administrator\Desktop\PY\售后数据处理\故障码查询.xlsx"
+fault_code_path = r"故障码查询.xlsx"
 @st.cache_data
 def load_fault_codes():
     try:
@@ -209,7 +209,7 @@ def load_fault_codes():
         return pd.DataFrame()
 
 # 读取Excel文件
-file_path = r"C:\Users\Administrator\Desktop\PY\售后数据处理\数据处理.xlsx"
+file_path = r"数据处理.xlsx"
 
 # 加载数据的函数
 @st.cache_data
