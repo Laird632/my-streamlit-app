@@ -48,7 +48,7 @@ h1, .stMarkdown h1 {
     font-weight: 700 !important;
     color: #1d1d1f !important;
     text-align: center;
-    margin-top: -70px !important; --------------------图表移动
+    margin-top: -130px !important; --------------------图表移动
     margin-bottom: 2.5rem !important;
     letter-spacing: -0.02em;
     border: none !important;
@@ -62,7 +62,7 @@ h2, h3, .stMarkdown h2, .stMarkdown h3 {
     border-left: 4px solid #e5e5e7;
     padding-left: 1rem;
     background: none !important;
-    margin-top: 2rem !important;
+    margin-top: 1rem !important;
     margin-bottom: 1.2rem !important;
 }
 
@@ -77,7 +77,7 @@ h2, h3, .stMarkdown h2, .stMarkdown h3 {
     padding: 0.7rem 2.2rem !important;
     box-shadow: 0 2px 8px 0 rgba(60,60,67,0.07);
     transition: all 0.18s cubic-bezier(.4,0,.2,1);
-    margin-top: 0.5rem !important;
+    margin-top: -1rem !important;
 }
 .stButton > button:hover {
     background: #e5e5e7 !important;
@@ -158,37 +158,47 @@ footer, #MainMenu, .stDeployButton {display: none !important;}
 </style>
 """, unsafe_allow_html=True)
 
-# 登录界面
-def login():
-    st.title('用户登录')
-    
-    # 使用 st.columns 实现居中布局
-    col1, col2, col3 = st.columns([1, 2, 1])  # 左右列留空，中间为登录框
-    
-    # 使用 col2 来访问中间列
-    with col2:  # 中间列
-        username = st.text_input('账号', key='username_input')
-        password = st.text_input('密码', type='password', key='password_input')
-        
-        if st.button('登录', key='login_button'):
-            if username == 'Roborock' and password == '123456':
-                st.session_state.logged_in = True
-                st.rerun()  # 刷新页面
-            else:
-                st.error('账号或密码错误')
+# 在页面最顶部注入 CSS 和 HTML----------------------------------------------------------------------------
+import base64
 
-# 初始化 session_state
-if 'logged_in' not in st.session_state:
-    st.session_state.logged_in = False
+# 将图片转换为 Base64 编码
+with open('C:\\\\Users\\\\Administrator\\\\Desktop\\\\PY\\\\logo.png', 'rb') as img_file:
+    encoded_string = base64.b64encode(img_file.read()).decode('utf-8')
 
-# 如果未登录，显示登录界面
-if not st.session_state.logged_in:
-    login()
-    st.stop()
+st.markdown(f"""
+<style>
+/* 图标容器样式 */
+.logo-container {{
+    position: absolute;
+    top: -80px;
+    right: 30px;
+    z-index: 1000;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}}
+
+/* 图标样式 */
+.logo-img {{
+    width: 100px;
+    height: auto;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    transition: transform 0.3s ease;
+}}
+</style>
+
+<!-- 图标容器 -->
+<div class="logo-container">
+    <img src="data:image/png;base64,{encoded_string}" 
+         class="logo-img" 
+         alt="Stone Tech Logo"
+         title="点击返回首页">
+</div>
+""", unsafe_allow_html=True)
+
 
 
 # 读取故障码查询文件
-fault_code_path = r"故障码查询.xlsx"
+fault_code_path = r"C:\Users\Administrator\Desktop\PY\售后数据处理\故障码查询.xlsx"
 @st.cache_data
 def load_fault_codes():
     try:
@@ -199,7 +209,7 @@ def load_fault_codes():
         return pd.DataFrame()
 
 # 读取Excel文件
-file_path = r"数据处理.xlsx"
+file_path = r"C:\Users\Administrator\Desktop\PY\售后数据处理\数据处理.xlsx"
 
 # 加载数据的函数
 @st.cache_data
@@ -579,6 +589,12 @@ if selected_fault_tag == '全选':
         ax1.text(bar.get_x() + bar.get_width()/2., height/2, f'{height}',
                  ha='center', va='center', color='black', fontfamily='Microsoft YaHei', fontweight='normal')
 
+    # 在柱状图上方添加故障率数据
+    for i, (fault_count, cumulative_sales) in enumerate(zip(fault_tag_data['故障数'], fault_tag_data['累计销量'])):
+        fault_rate = (fault_count / cumulative_sales) * 100
+        label_position = fault_count + (ax1.get_ylim()[1] * 0.02)
+        ax1.text(i, label_position, f'{fault_rate:.2f}%', ha='center', va='bottom', color='red', fontfamily='Microsoft YaHei', fontweight='normal')
+
     # 创建次坐标轴
     ax2 = ax1.twinx()
 
@@ -646,6 +662,12 @@ if selected_fault_tag == '全选':
             height = bar.get_height()
             ax.text(bar.get_x() + bar.get_width()/2., height/2, f'{height}',
                     ha='center', va='center', color='black', fontfamily='Microsoft YaHei', fontweight='normal')
+
+        # 在柱状图上方添加故障率数据
+        for i, (fault_count, cumulative_sales) in enumerate(zip(fault_phenomenon_data['故障数'], fault_phenomenon_data['累计销量'])):
+            fault_rate = (fault_count / cumulative_sales) * 100
+            label_position = fault_count + (ax.get_ylim()[1] * 0.02)
+            ax.text(i, label_position, f'{fault_rate:.2f}%', ha='center', va='bottom', color='red', fontfamily='Microsoft YaHei', fontweight='normal')
 
         # 创建次坐标轴
         ax2 = ax.twinx()
