@@ -154,6 +154,26 @@ footer, #MainMenu, .stDeployButton {display: none !important;}
     padding: 0 !important;
     background: transparent !important;
 }
+
+/* 登录标题居中 */   ---------------------------------------------
+.login-title {
+    text-align: center;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+/* 登录界面输入框容器居中 */
+div[data-testid="stTextInput"] {
+    width: 500px !important;
+    margin: 0 auto !important;
+}
+
+/* 登录按钮居中 */
+div[data-testid="stButton"] {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
             
 </style>
 """, unsafe_allow_html=True)
@@ -194,6 +214,31 @@ st.markdown(f"""
          title="点击返回首页">
 </div>
 """, unsafe_allow_html=True)
+
+
+# 登录界面--------------------------------------------------------------------------------------------------------------------------
+def login():
+    st.markdown('<div class="login-container">', unsafe_allow_html=True)
+    st.markdown('<div class="login-title">登录</div>', unsafe_allow_html=True)
+    
+    username = st.text_input('账号', key='username_input', placeholder='请输入您的账号')
+    password = st.text_input('密码', type='password', key='password_input', placeholder='请输入您的密码')
+    
+    if st.button('登录', key='login_button'):
+        if username == 'Roborock' and password == '123456':
+            st.session_state.logged_in = True
+            st.rerun()
+        else:
+            st.error('账号或密码错误')
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+
+if 'logged_in' not in st.session_state:
+    st.session_state.logged_in = False
+
+if not st.session_state.logged_in:
+    login()
+    st.stop()
 
 
 
