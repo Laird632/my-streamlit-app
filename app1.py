@@ -155,7 +155,7 @@ footer, #MainMenu, .stDeployButton {display: none !important;}
     background: transparent !important;
 }
 
-/* 登录标题居中 */   ---------------------------------------------
+/* 登录标题居中 */
 .login-title {
     text-align: center;
     font-size: 3rem;
