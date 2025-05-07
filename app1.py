@@ -234,6 +234,13 @@ def login():
 
     st.markdown('</div>', unsafe_allow_html=True)
 
+if 'logged_in' not in st.session_state:
+    st.session_state.logged_in = False
+
+if not st.session_state.logged_in:
+    login()
+    st.stop()
+
 # 读取故障码查询文件--------------------------------------------------------------------------------------------------
 fault_code_path = r"故障码查询.xlsx"
 @st.cache_data
