@@ -217,29 +217,22 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
- # 登录界面--------------------------------------------------------------------------------------------------------------------------
- def login():
-     st.markdown('<div class="login-container">', unsafe_allow_html=True)
-     st.markdown('<div class="login-title">登录</div>', unsafe_allow_html=True)
- 
-     username = st.text_input('账号', key='username_input', placeholder='请输入您的账号')
-     password = st.text_input('密码', type='password', key='password_input', placeholder='请输入您的密码')
- 
-     if st.button('登录', key='login_button'):
-         if username == 'Roborock' and password == '123456':
-             st.session_state.logged_in = True
-             st.rerun()
-         else:
-             st.error('账号或密码错误')
- 
-     st.markdown('</div>', unsafe_allow_html=True)
- 
- if 'logged_in' not in st.session_state:
-     st.session_state.logged_in = False
- 
- if not st.session_state.logged_in:
-     login()
-     st.stop()
+# 登录界面--------------------------------------------------------------------------------------------------------------------------
+def login():
+    st.markdown('<div class="login-container">', unsafe_allow_html=True)
+    st.markdown('<div class="login-title">登录</div>', unsafe_allow_html=True)
+
+    username = st.text_input('账号', key='username_input', placeholder='请输入您的账号')
+    password = st.text_input('密码', type='password', key='password_input', placeholder='请输入您的密码')
+
+    if st.button('登录', key='login_button'):
+        if username == 'Roborock' and password == '123456':
+            st.session_state.logged_in = True
+            st.rerun()
+        else:
+            st.error('账号或密码错误')
+
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # 读取故障码查询文件--------------------------------------------------------------------------------------------------
 fault_code_path = r"故障码查询.xlsx"
