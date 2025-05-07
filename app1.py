@@ -430,19 +430,25 @@ if selected_report != '关闭报告查询功能':  # Check if a report is select
     else:
         st.warning("该报告文件夹中没有 PNG 图片。")
 
-# 定义一个函数来统一设置图表样式
-
+# 定义一个函数来统一设置图表样式--------------------------------------图表样式设定
 def set_chart_style(ax1, ax2, title, xlabel, ylabel1, ylabel2):
-    ax1.set_xlabel(xlabel, fontsize=12)
-    ax1.set_ylabel(ylabel1, color='tab:blue', fontsize=12)
-    ax2.set_ylabel(ylabel2, color='tab:red', fontsize=12)
-    plt.title(title, fontsize=16)
-    ax1.legend(loc='upper left', fontsize=10)
-    ax2.legend(loc='upper right', fontsize=10)
-    plt.xticks(rotation=45, ha='right')
+    ax1.set_xlabel(xlabel, fontsize=16, fontweight='bold')  # 增加字体大小
+    ax1.set_ylabel(ylabel1, color='tab:blue', fontsize=16)  # 增加字体大小
+    ax2.set_ylabel(ylabel2, color='tab:red', fontsize=16)  # 增加字体大小
+    plt.title(title, fontsize=18, fontweight='bold')  # 增加字体大小
+    ax1.legend(loc='upper left', fontsize=12)  # 增加字体大小
+    ax2.legend(loc='upper right', fontsize=12)  # 增加字体大小
+    plt.xticks(rotation=45, ha='right', fontsize=12)
     plt.tight_layout()
+    ax1.grid(axis='y', linestyle='--', color='lightgray', alpha=0.5)  # 使用虚线
 
-# 使用统一的图表样式函数
+    # 添加箭头
+    ax1.annotate('', xy=(1, 0), xytext=(0, 0),
+                 arrowprops=dict(arrowstyle='->', color='black', lw=0.8),
+                 xycoords='axes fraction', textcoords='axes fraction')
+    ax1.annotate('', xy=(0, 1), xytext=(0, 0),
+                 arrowprops=dict(arrowstyle='->', color='black', lw=0.8),
+                 xycoords='axes fraction', textcoords='axes fraction')
 
 # 月度故障分析 ------------------------------------------------------------------------------------------------------
 st.subheader("月度故障 - AFR")
