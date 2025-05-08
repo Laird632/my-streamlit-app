@@ -176,7 +176,20 @@ div[data-testid="stButton"] {
     justify-content: center;
     margin-top: 10px;
 }
-            
+
+/* 调整滚动条宽度 */
+::-webkit-scrollbar {
+    width: 14px; /* 设置滚动条的宽度 */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #888; /* 设置滚动条的颜色 */
+    border-radius: 10px; /* 设置滚动条的圆角 */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* 设置鼠标悬停时的颜色 */
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -411,7 +424,7 @@ with st.sidebar:
                 st.warning("未找到匹配的故障码")
 
     # 在侧边栏增加产品质量报告查询按钮
-    st.header("故障分析报告查询")
+    st.header("重点故障报告查询")
     # Keep the dropdown for selecting the report in the sidebar
     quality_report_path = r"产品质量报告"
     report_folders = ['关闭报告查询功能'] + [folder for folder in os.listdir(quality_report_path) if os.path.isdir(os.path.join(quality_report_path, folder))]
@@ -436,8 +449,6 @@ def set_chart_style(ax1, ax2, title, xlabel, ylabel1, ylabel2):
     ax1.set_ylabel(ylabel1, color='tab:blue', fontsize=16)  # 增加字体大小
     ax2.set_ylabel(ylabel2, color='tab:red', fontsize=16)  # 增加字体大小
     plt.title(title, fontsize=18, fontweight='bold')  # 增加字体大小
-    ax1.legend(loc='upper left', fontsize=12)  # 增加字体大小
-    ax2.legend(loc='upper right', fontsize=12)  # 增加字体大小
     plt.xticks(rotation=45, ha='right', fontsize=12)
     plt.tight_layout()
     ax1.grid(axis='y', linestyle='--', color='lightgray', alpha=0.5)  # 使用虚线
@@ -477,7 +488,7 @@ fig1, ax1 = plt.subplots(figsize=(12, 5))
 bars1 = ax1.bar([x - 0.2 for x in range(len(monthly_data['创建时间'].astype(str)))], monthly_data['故障数'], color='tab:blue', alpha=0.6, label=None, width=0.4)
 
 # 绘制累计故障数柱状图
-bars2 = ax1.bar([x + 0.2 for x in range(len(monthly_data['创建时间'].astype(str)))], monthly_data['累计故障数'], color='tab:orange', alpha=0.6, label='累计故障数', width=0.4)
+bars2 = ax1.bar([x + 0.2 for x in range(len(monthly_data['创建时间'].astype(str)))], monthly_data['累计故障数'], color='tab:orange', alpha=0.6, label=None, width=0.4)
 
 # 为柱状图添加数据标签
 for bar in bars1:
@@ -501,10 +512,8 @@ for x, y in zip(monthly_data['创建时间'].astype(str), (monthly_data['累计�
     ax2.text(x, y, f"{y:.2f}%", ha='center', va='bottom')  # 将标签位置调整为底部
 
 # 设置图表样式
-set_chart_style(ax1, ax2, f'{selected_series.split("(")[0]} 月度故障 - AFR', '故障数（月份）', '', '')
-ax2.set_ylabel('', color='tab:red', fontsize=12)  # Set Y-axis label
+set_chart_style(ax1, ax2, f'{selected_series.split("(")[0]} 月度故障 - AFR', '月度故障-不良增长', '', '')
 ax2.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{x:.2f}%'))  # Format Y-axis as percentage
-ax1.legend(frameon=False)
 st.pyplot(fig1)
 
 
@@ -531,7 +540,7 @@ fig2, ax1 = plt.subplots(figsize=(12, 5))
 bars1 = ax1.bar([x - 0.2 for x in range(len(weekly_data['故障周数'].astype(str)))], weekly_data['故障数'], color='tab:blue', alpha=0.6, label=None, width=0.4)
 
 # 绘制累计故障数柱状图
-bars2 = ax1.bar([x + 0.2 for x in range(len(weekly_data['故障周数'].astype(str)))], weekly_data['累计故障数'], color='tab:orange', alpha=0.6, label='累计故障数', width=0.4)
+bars2 = ax1.bar([x + 0.2 for x in range(len(weekly_data['故障周数'].astype(str)))], weekly_data['累计故障数'], color='tab:orange', alpha=0.6, label=None, width=0.4)
 
 # 为柱状图添加数据标签
 for bar in bars1:
@@ -555,11 +564,9 @@ for x, y in zip(weekly_data['故障周数'].astype(str), (weekly_data['累计故
     ax2.text(x, y, f"{y:.2f}%", ha='center', va='bottom')  # 将标签位置调整为底部
 
 # 设置图表样式
-set_chart_style(ax1, ax2, f'{selected_series.split("(")[0]} 周度故障 - AFR', '故障数（周度）', '', '')
-ax2.set_ylabel('', color='tab:red', fontsize=12)  # Set Y-axis label
+set_chart_style(ax1, ax2, f'{selected_series.split("(")[0]} 周度故障 - AFR', '周度故障-不良增长', '', '')
 ax2.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{x:.2f}%'))  # Format Y-axis as percentage
 ax1.set_xticklabels(weekly_data['故障周数'].astype(str), rotation=45, ha='right')  # Rotate 45°, right align
-ax1.legend(frameon=False)
 st.pyplot(fig2)
 
 
@@ -669,6 +676,14 @@ if selected_fault_tag == '全选':
         ax1.text(bar.get_x() + bar.get_width()/2., height/2, f'{height}',
                  ha='center', va='center', color='black', fontfamily='Microsoft YaHei', fontweight='normal')
 
+    # 添加箭头
+    ax1.annotate('', xy=(1, 0), xytext=(0, 0),
+                 arrowprops=dict(arrowstyle='->', color='black', lw=0.8),
+                 xycoords='axes fraction', textcoords='axes fraction')
+    ax1.annotate('', xy=(0, 1), xytext=(0, 0),
+                 arrowprops=dict(arrowstyle='->', color='black', lw=0.8),
+                 xycoords='axes fraction', textcoords='axes fraction')
+
     # 在柱状图上方添加故障率数据
     for i, (fault_count, cumulative_sales) in enumerate(zip(fault_tag_data['故障数'], fault_tag_data['累计销量'])):
         fault_rate = (fault_count / cumulative_sales) * 100
@@ -695,6 +710,11 @@ if selected_fault_tag == '全选':
     # 添加图例
     ax1.legend(frameon=False, loc='upper right')
     # ax2.legend(frameon=False)
+
+    # 设置图表样式
+    set_chart_style(ax1, ax2, f'{selected_series.split("(")[0]} 整机故障 - Top10', '整机故障-不良增长', '', '')
+    ax2.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{int(x)}%'))  # Format Y-axis as percentage
+    ax1.set_xticklabels(weekly_data['故障周数'].astype(str), rotation=45, ha='right')  # Rotate 45°, right align
 
     # 坐标轴45°设置
     plt.xticks(rotation=45, ha='right')  # 旋转 45°，并右对齐
@@ -742,6 +762,14 @@ if selected_fault_tag == '全选':
             ax.text(bar.get_x() + bar.get_width()/2., height/2, f'{height}',
                     ha='center', va='center', color='black', fontfamily='Microsoft YaHei', fontweight='normal')
 
+        # 添加箭头
+        ax.annotate('', xy=(1, 0), xytext=(0, 0),
+                    arrowprops=dict(arrowstyle='->', color='black', lw=0.8),
+                    xycoords='axes fraction', textcoords='axes fraction')
+        ax.annotate('', xy=(0, 1), xytext=(0, 0),
+                    arrowprops=dict(arrowstyle='->', color='black', lw=0.8),
+                    xycoords='axes fraction', textcoords='axes fraction')
+
         # 在柱状图上方添加故障率数据
         for i, (fault_count, cumulative_sales) in enumerate(zip(fault_phenomenon_data['故障数'], fault_phenomenon_data['累计销量'])):
             fault_rate = (fault_count / cumulative_sales) * 100
@@ -768,8 +796,9 @@ if selected_fault_tag == '全选':
         ax.legend(frameon=False, loc='upper right')
         # ax2.legend(frameon=False)
 
-        # 坐标轴45°设置
-        plt.xticks(rotation=45, ha='right')  # 旋转 45°，并右对齐
+        # 设置图表样式
+        set_chart_style(ax, ax2, f'{selected_series.split("(")[0]} 桩故障 - Top10', '桩故障-不良增长', '', '')
+        ax2.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{int(x)}%'))  # Format Y-axis as percentage
         ax.set_xticks(range(len(fault_phenomenon_data['故障现象'])))  # 确保 X 轴刻度正确
         ax.set_xticklabels(fault_phenomenon_data['故障现象'], rotation=45, ha='right')
 
@@ -819,6 +848,9 @@ else:
     ax.set_xticks(range(len(fault_phenomenon_data['故障现象'])))  # 确保 X 轴刻度正确
     ax.set_xticklabels(fault_phenomenon_data['故障现象'], rotation=45, ha='right')
 
+    set_chart_style(ax, ax2, f'{selected_series.split("(")[0]} 故障现象 - Top10', '故障现象-不良增长', '', '')
+    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{int(x)}%'))  # Format Y-axis as percentage
+
     # 调整布局以适应图表
     plt.tight_layout()
 
@@ -833,7 +865,7 @@ if st.checkbox('显示筛选后的数据'):
     st.dataframe(filtered_df)
     if st.button('下载筛选后的数据'):
         try:
-            export_path = r'C:\Users\Administrator\Desktop\筛选后的数据_data.xlsx'
+            export_path = r'筛选后的数据_data.xlsx'
             filtered_df.to_excel(export_path, index=False)
             st.success(f'筛选后的数据已成功导出到 {export_path}')
         except Exception as e:
@@ -843,7 +875,7 @@ if st.checkbox('显示筛选后的数据'):
 if st.button('数据一键导出'):
     try:
         # 指定完整路径
-        export_path = r'C:\Users\Administrator\Desktop\数据信息_data.xlsx'
+        export_path = r'数据信息_data.xlsx'
         # 创建Excel文件
         with pd.ExcelWriter(export_path) as writer:
             # 月度故障 - AFR
