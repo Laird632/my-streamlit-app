@@ -33,14 +33,19 @@ plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
 st.set_page_config(layout="wide")
 import streamlit as st
 
+
+# 初始化 session_state 中的 product_type
+if "product_type" not in st.session_state:
+    st.session_state.product_type = "产品_扫地机器人"  # 或者 "产品_家用洗地机" 作为默认值
 # 在页面最顶部注入 CSS
 st.markdown("""·
 <style>
 /* Apple 风格整体基调 */
 html, body, .stApp {
     font-family: 'SF Pro Display', 'San Francisco', 'Segoe UI', 'Arial', 'Microsoft YaHei', sans-serif !important;
-    background: #f5f6f7 !important;
-    color: #1d1d1f !important;
+    background: #F0F0F0 !important;  /* 浅色背景 */
+            
+    color: #1d1d1f !important;  /* 深色文本 */
     letter-spacing: 0.01em;
 }
 
@@ -48,10 +53,10 @@ html, body, .stApp {
 h1, .stMarkdown h1 {
     font-size: 3.8rem !important;
     font-weight: 700 !important;
-    color: #1d1d1f !important;
+    color: #003366 !important;  /* 更深的黑色 */
     text-align: center;
-    margin-top: -130px !important; --------------------图表移动
-    margin-bottom: 2.5rem !important;
+    margin-top: -100px !important;  /* 调整为更小的负值 */
+    margin-bottom: 0em !important;  /* 调整为更小的值 */
     letter-spacing: -0.02em;
     border: none !important;
     text-shadow: none !important;
@@ -59,7 +64,7 @@ h1, .stMarkdown h1 {
 
 /* 副标题 */
 h2, h3, .stMarkdown h2, .stMarkdown h3 {
-    color: #1d1d1f !important;
+    color: #333333 !important;  /* 深灰色 */
     font-weight: 600 !important;
     border-left: 4px solid #e5e5e7;
     padding-left: 1rem;
@@ -70,8 +75,8 @@ h2, h3, .stMarkdown h2, .stMarkdown h3 {
 
 /* 按钮 */
 .stButton > button {
-    background: #f5f5f7 !important;
-    color: #1d1d1f !important;
+    background: #f5f5f7 !important;  /* 按钮背景 */
+    color: #1d1d1f !important;  /* 深色文本 */
     border: 1px solid #d2d2d7 !important;
     border-radius: 16px !important;
     font-size: 1.1rem !important;
@@ -83,7 +88,7 @@ h2, h3, .stMarkdown h2, .stMarkdown h3 {
 }
 .stButton > button:hover {
     background: #e5e5e7 !important;
-    color: #0071e3 !important;
+    color: #0071e3 !important;  /* 悬停时的文本颜色 */
     border-color: #0071e3 !important;
     transform: translateY(-2px) scale(1.03);
     box-shadow: 0 4px 16px 0 rgba(60,60,67,0.10);
@@ -91,12 +96,11 @@ h2, h3, .stMarkdown h2, .stMarkdown h3 {
 
 /* 侧边栏 */
 [data-testid="stSidebar"] {
-    background: #f9f9fa !important;
-    color: #1d1d1f !important;
+    background: #FFFFFF !important;  /* 白色 */
+    color: #1d1d1f !important;  /* 深色文本 */
     border-right: 1px solid #e5e5e7 !important;
-    box-shadow: 2px 0 12px 0 rgba(60,60,67,0.04);
-    border-radius: 0 24px 24px 0;
-    padding-top: 2rem !important;
+    /* border-radius: 0 24px 24px 0; */  // Removed rounded corners
+    padding-top: 2rem !important;  /* 保持原有的 padding */
 }
 .sidebar .sidebar-content {
     padding: 2rem 1.2rem !important;
@@ -105,7 +109,7 @@ h2, h3, .stMarkdown h2, .stMarkdown h3 {
 /* 选择框、滑块等表单控件 */
 .stSelectbox label,
 .stSlider label {
-    color: #86868b !important;
+    color: #333333 !important;  /* 深灰色 */
     font-weight: 500 !important;
     font-size: 1.05rem !important;
     margin-bottom: 0.2rem !important;
@@ -230,29 +234,7 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# 登录界面--------------------------------------------------------------------------------------------------------------------------
-def login():
-    st.markdown('<div class="login-container">', unsafe_allow_html=True)
-    st.markdown('<div class="login-title">登录</div>', unsafe_allow_html=True)
 
-    username = st.text_input('账号', key='username_input', placeholder='请输入您的账号')
-    password = st.text_input('密码', type='password', key='password_input', placeholder='请输入您的密码')
-
-    if st.button('登录', key='login_button'):
-        if username == 'Roborock' and password == '123456':
-            st.session_state.logged_in = True
-            st.rerun()
-        else:
-            st.error('账号或密码错误')
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-if 'logged_in' not in st.session_state:
-    st.session_state.logged_in = False
-
-if not st.session_state.logged_in:
-    login()
-    st.stop()
 
 # 读取故障码查询文件--------------------------------------------------------------------------------------------------
 fault_code_path = r"故障码查询.xlsx"
@@ -284,25 +266,35 @@ df_robot, df_cleaner = load_data()
 # 主标题样式
 st.markdown("""
     <h1 style='font-family:"Microsoft YaHei"; color:red; font-size:40px; text-align:center;margin-top:0.5rem;'>
-        《石头售后质量一览》
+        国 内 售 后 数 据 一 览 
     </h1>
 """, unsafe_allow_html=True)
 
-# 产品类型选择
-col1, col2 = st.columns(2)
-with col1:
-    robot_btn = st.button("🤖 扫地机器人", use_container_width=True)
-with col2:
-    cleaner_btn = st.button("🧼 家用洗地机", use_container_width=True)
-
-# 初始化会话状态中的产品类型
-if 'product_type' not in st.session_state:
-    st.session_state.product_type = "产品_扫地机器人"
-
-if robot_btn:
-    st.session_state.product_type = "产品_扫地机器人"
-if cleaner_btn:
-    st.session_state.product_type = "产品_家用洗地机"
+# 在侧边栏增加产品类型选择
+with st.sidebar:
+    st.markdown("""
+        <style>
+        .custom-margin {
+            margin-top: 10px;  /* Adjust this value for height */
+        }
+        .stButton > button {
+            width: 100%;  /* Set button width to 100% */
+        }
+        </style>
+    """, unsafe_allow_html=True)
+    
+    st.markdown('<div class="custom-margin"></div>', unsafe_allow_html=True)  # Add custom margin
+    
+    # 创建两列
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        if st.button("🤖扫地机"):
+            st.session_state.product_type = "产品_扫地机器人"
+    
+    with col2:
+        if st.button("🧼洗地机"):
+            st.session_state.product_type = "产品_家用洗地机"
 
 # 根据选择获取当前数据框
 if st.session_state.product_type == "产品_扫地机器人":
@@ -319,12 +311,6 @@ with st.sidebar:
         }
         </style>
     """, unsafe_allow_html=True)
-    
-    # Update the header based on the selected product type
-    if st.session_state.product_type == "产品_扫地机器人":
-        st.header("扫地机-产品系列")
-    else:
-        st.header("洗地机-产品系列")
     
     # 产品系列筛选
     product_series_options = ['全选'] + sorted(df['产品系列'].unique().tolist())
@@ -354,11 +340,15 @@ with st.sidebar:
 
     # 在侧边栏增加周数筛选框
 with st.sidebar:
-    st.header("周数筛选")
-    
     # 获取所有周数并排序
     # 首先过滤掉空值
     valid_weeks = df['故障周数'].dropna().unique()
+    
+    # 根据选择的产品系列过滤周数
+    if selected_series != '全选':
+        product_series_filtered_df = df[df['产品系列'] == selected_series]
+        valid_weeks = product_series_filtered_df['故障周数'].dropna().unique()
+    
     try:
         # 修改排序逻辑，先按年份后按周数
         all_weeks = sorted(valid_weeks, key=lambda x: (
@@ -408,7 +398,17 @@ with st.sidebar:
 
 # 在侧边栏增加故障码查询功能------------------新增---------------------------------------------------------------------
 with st.sidebar:
-    st.header("故障码查询")
+    st.markdown("""
+        <style>
+        /* 更具体的选择器来设置故障码查询输入框的宽度和居中 */
+        .stSidebar div[data-testid="stTextInput"] {
+            width: auto !important; /* 设置输入框宽度为自动 */
+            max-width: 100% !important; /* 最大宽度为100% */
+            margin: 0 auto !important; 
+        }
+        </style>
+    """, unsafe_allow_html=True)
+    
     fault_code_input = st.text_input("输入故障码（支持模糊查询）")
     if fault_code_input:
         df_fault_codes = load_fault_codes()
@@ -424,14 +424,13 @@ with st.sidebar:
                 st.warning("未找到匹配的故障码")
 
     # 在侧边栏增加产品质量报告查询按钮
-    st.header("重点故障报告查询")
     # Keep the dropdown for selecting the report in the sidebar
     quality_report_path = r"产品质量报告"
-    report_folders = ['关闭报告查询功能'] + [folder for folder in os.listdir(quality_report_path) if os.path.isdir(os.path.join(quality_report_path, folder))]
-    selected_report = st.selectbox("选择质量分析报告", report_folders)
+    report_folders = ['关闭查询'] + [folder for folder in os.listdir(quality_report_path) if os.path.isdir(os.path.join(quality_report_path, folder))]
+    selected_report = st.selectbox("质量分析报告查询", report_folders)
 
 # 新增：在主页面显示质量报告
-if selected_report != '关闭报告查询功能':  # Check if a report is selected and not the empty option
+if selected_report != '关闭查询':  # Check if a report is selected and not the empty option
     report_images_path = os.path.join(quality_report_path, selected_report)
     # 获取所有 PNG 图片
     report_images = [img for img in os.listdir(report_images_path) if img.endswith('.png')]
@@ -482,9 +481,9 @@ average_faults = monthly_data['故障数'].mean()
 # 设置柱子的颜色
 colors = ['tab:red' if count > average_faults * 1.3 else 'tab:blue' for count in monthly_data['故障数']]
 
-fig1, ax1 = plt.subplots(figsize=(12, 5))
+fig1, ax1 = plt.subplots(figsize=(12, 5))   # 设置图表 长宽
 
-# 绘制当前月故障数柱状图
+# 绘制当前月故障数柱状图，调整颜色为蓝色
 bars1 = ax1.bar([x - 0.2 for x in range(len(monthly_data['创建时间'].astype(str)))], monthly_data['故障数'], color='tab:blue', alpha=0.6, label=None, width=0.4)
 
 # 绘制累计故障数柱状图
@@ -504,21 +503,29 @@ for bar in bars2:
 # 创建次坐标轴
 ax2 = ax1.twinx()
 
-# 绘制累计AFR曲线
-line = ax2.plot(monthly_data['创建时间'].astype(str), (monthly_data['累计故障数'] / monthly_data['累计销量']) * 100, color='tab:red', marker='o')
+# 绘制累计AFR曲线，调整颜色为浅蓝色
+line = ax2.plot(monthly_data['创建时间'].astype(str), (monthly_data['累计故障数'] / monthly_data['累计销量']) * 100, color='#00BFFF', marker='o')
 
 # 为折线图添加数据标签
 for x, y in zip(monthly_data['创建时间'].astype(str), (monthly_data['累计故障数'] / monthly_data['累计销量']) * 100):
     ax2.text(x, y, f"{y:.2f}%", ha='center', va='bottom')  # 将标签位置调整为底部
 
+# 更新图表标题
+chart_title = f"{selected_series.split('(')[0]}-{selected_fault_tag if selected_fault_tag != '全选' else ''} 累计AFR".strip()
+
 # 设置图表样式
-set_chart_style(ax1, ax2, f'{selected_series.split("(")[0]} 月度故障 - AFR', '月度故障-不良增长', '', '')
+set_chart_style(ax1, ax2, chart_title, '', '', '')
 ax2.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{x:.2f}%'))  # Format Y-axis as percentage
+
+# 添加图例到图表底部
+handles = [bars1, bars2, line[0]]
+labels = ['当月返修', '累计返修', '累计AFR']
+fig1.legend(handles, labels, loc='lower center', ncol=3, bbox_to_anchor=(0.5, -0.05), frameon=False)
+
 st.pyplot(fig1)
 
-
 # 周度故障分析 -----------------------------------------------------------------------------------------------------
-st.subheader("周度故障 - AFR")
+# st.subheader("周度故障 - AFR")
 weekly_data = filtered_df.groupby('故障周数').agg(
     故障数=('故障数', 'count'),
     累计销量=('累计销量', 'first')
@@ -557,21 +564,24 @@ for bar in bars2:
 ax2 = ax1.twinx()
 
 # 绘制累计AFR曲线
-line = ax2.plot(weekly_data['故障周数'].astype(str), (weekly_data['累计故障数'] / weekly_data['累计销量']) * 100, color='tab:red', marker='o')
+line = ax2.plot(weekly_data['故障周数'].astype(str), (weekly_data['累计故障数'] / weekly_data['累计销量']) * 100, color='#00BFFF', marker='o')
 
 # 为折线图添加数据标签
 for x, y in zip(weekly_data['故障周数'].astype(str), (weekly_data['累计故障数'] / weekly_data['累计销量']) * 100):
     ax2.text(x, y, f"{y:.2f}%", ha='center', va='bottom')  # 将标签位置调整为底部
 
+# 更新图表标题
+chart_title_weekly = f"{selected_series.split('(')[0]}-{selected_fault_tag if selected_fault_tag != '全选' else ''} 累计AFR".strip()
+
 # 设置图表样式
-set_chart_style(ax1, ax2, f'{selected_series.split("(")[0]} 周度故障 - AFR', '周度故障-不良增长', '', '')
+set_chart_style(ax1, ax2, chart_title_weekly, '', '', '')
 ax2.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{x:.2f}%'))  # Format Y-axis as percentage
 ax1.set_xticklabels(weekly_data['故障周数'].astype(str), rotation=45, ha='right')  # Rotate 45°, right align
-st.pyplot(fig2)
+# st.pyplot(fig2)
 
 
-# 生产批次故障不良 - AFR--------------------------------------------------------------------------------------------------------
-st.subheader("生产批次故障不良 - AFR")
+# 生产批次故障不良 --------------------------------------------------------------------------------------------------------
+st.subheader("生产批次-不良监控")
 production_batch_data = filtered_df.groupby('生产批次').agg(
     故障数=('故障数', 'count'),
     累计销量=('累计销量', 'first')
@@ -589,20 +599,43 @@ for bar in bars:
     height = bar.get_height()
     ax1.text(bar.get_x() + bar.get_width()/2., height/2, f'{height}',
              ha='center', va='center', color='black', fontfamily='Microsoft YaHei', fontweight='normal')
+# 在柱状图上方添加故障率数据
+for i, row in production_batch_data.iterrows():
+    fault_count = row['故障数']
+    cumulative_sales = row['累计销量']
+    if cumulative_sales > 0:  # 避免除以零
+        fault_rate = (fault_count / cumulative_sales) * 100
+        # 获取当前柱子的高度
+        bar_artist = bars[i]
+        bar_height = bar_artist.get_height()
+        # 将标签放置在柱子略上方，确保可见
+        label_position = bar_height + (ax1.get_ylim()[1] * 0.02 if ax1.get_ylim()[1] > 0 else 0.02) # 如果y轴上限为0则调整
+        ax1.text(i, label_position, f'{fault_rate:.2f}%', ha='center', va='bottom', color='red', fontfamily='Microsoft YaHei', fontweight='normal')
 
-# Set X-axis ticks explicitly to the unique production batches
-ax1.set_xticks(range(len(production_batch_data['生产批次'])))  # Ensure X-axis ticks are correct
-ax1.set_xticklabels(production_batch_data['生产批次'].astype(str), rotation=45, ha='right')  # Rotate 45°, right align
+# 将 X 轴刻度显式设置为唯一的生产批次
+ax1.set_xticks(range(len(production_batch_data['生产批次'])))  # 确保 X 轴刻度正确
+ax1.set_xticklabels(production_batch_data['生产批次'].astype(str), rotation=45, ha='right')  # 旋转 45°，右对齐
 
-set_chart_style(ax1, ax1, f'{selected_series.split("(")[0]} 生产故障批次 - AFR', '批次故障（生产周数）', '', '')
+# 动态设置图表标题
+chart_title = f"{selected_series.split('(')[0]}-{selected_fault_tag if selected_fault_tag != '全选' else ''} 批次不良图".strip()
+set_chart_style(ax1, ax1, chart_title, '', '', '')
 
 # 计算累计故障数的均值
 mean_cumulative_faults = production_batch_data['故障数'].mean()
 
 # 添加红色虚线表示累计故障数的均值
-ax1.axhline(mean_cumulative_faults, color='red', linestyle='--', label='批次不良均线')
-
+ax1.axhline(mean_cumulative_faults, color='darkgray', linestyle='--', label='批次不良均线')
 ax1.legend(frameon=False)
+
+proxy_production_batch = matplotlib.patches.Patch(color='tab:blue', alpha=0.6) # 代表蓝色柱子
+proxy_fault_rate_text = matplotlib.lines.Line2D([], [], color='red', linestyle='None', marker='_', markersize=10, markeredgewidth=1.5) # 代表红色故障率文本
+
+# 图表底部图例的句柄和标签
+fig_legend_handles = [proxy_production_batch, proxy_fault_rate_text]
+fig_legend_labels = ['生产批次（周数）', '批次故障率']
+
+# 在图表的底部中心添加“-生产批次”和“-批次故障率”的图例
+fig2.legend(fig_legend_handles, fig_legend_labels, loc='lower center', ncol=2, bbox_to_anchor=(0.5, -0.05), frameon=False)
 st.pyplot(fig2)
 
 
@@ -712,7 +745,7 @@ if selected_fault_tag == '全选':
     # ax2.legend(frameon=False)
 
     # 设置图表样式
-    set_chart_style(ax1, ax2, f'{selected_series.split("(")[0]} 整机故障 - Top10', '整机故障-不良增长', '', '')
+    set_chart_style(ax1, ax2, f'{selected_series.split("(")[0]} 整机故障 - Top10', '', '', '')
     ax2.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{int(x)}%'))  # Format Y-axis as percentage
     ax1.set_xticklabels(weekly_data['故障周数'].astype(str), rotation=45, ha='right')  # Rotate 45°, right align
 
@@ -797,7 +830,7 @@ if selected_fault_tag == '全选':
         # ax2.legend(frameon=False)
 
         # 设置图表样式
-        set_chart_style(ax, ax2, f'{selected_series.split("(")[0]} 桩故障 - Top10', '桩故障-不良增长', '', '')
+        set_chart_style(ax, ax2, f'{selected_series.split("(")[0]} 桩故障 - Top10', '', '', '')
         ax2.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{int(x)}%'))  # Format Y-axis as percentage
         ax.set_xticks(range(len(fault_phenomenon_data['故障现象'])))  # 确保 X 轴刻度正确
         ax.set_xticklabels(fault_phenomenon_data['故障现象'], rotation=45, ha='right')
@@ -817,11 +850,21 @@ else:
 
     # 按故障现象分组
     fault_phenomenon_data = filtered_df_fault_tag.groupby('故障现象').agg(
-        故障数=('故障数', 'count')
+        故障数=('故障数', 'count'),
+        累计销量=('累计销量', 'first')
     ).reset_index()
+
+    # 计算故障率
+    fault_phenomenon_data['故障率'] = (fault_phenomenon_data['故障数'] / fault_phenomenon_data['累计销量']) * 100
 
     # 按故障数排序并取Top10
     fault_phenomenon_data = fault_phenomenon_data.sort_values(by='故障数', ascending=False).head(10)
+
+    # 计算累计故障数
+    total_faults = filtered_df_fault_tag['故障数'].sum()
+
+    # 计算累计百分比
+    fault_phenomenon_data['累计百分比'] = (fault_phenomenon_data['故障数'].cumsum() / total_faults) * 100
 
     # 创建图表
     fig4, ax = plt.subplots(figsize=(12, 6))
@@ -833,23 +876,42 @@ else:
         ax.text(bar.get_x() + bar.get_width()/2., height/2, f'{height}',
                 ha='center', va='center', color='black', fontfamily='Microsoft YaHei', fontweight='normal')
 
+    # 在柱状图上方添加故障率数据
+    for i, (fault_count, cumulative_sales) in enumerate(zip(fault_phenomenon_data['故障数'], fault_phenomenon_data['累计销量'])):
+        fault_rate = (fault_count / cumulative_sales) * 100
+        label_position = fault_count + (ax.get_ylim()[1] * 0.02)
+        ax.text(i, label_position, f'{fault_rate:.2f}%', ha='center', va='bottom', color='red', fontfamily='Microsoft YaHei', fontweight='normal')
+
+    # 创建次坐标轴
+    ax2 = ax.twinx()
+
+    # 绘制累计百分比曲线
+    ax2.plot(fault_phenomenon_data['故障现象'], fault_phenomenon_data['累计百分比'], color='darkgray', marker='o', label='')
+
+    # 为曲线添加数据标签
+    for x, y in zip(fault_phenomenon_data['故障现象'], fault_phenomenon_data['累计百分比']):
+        ax2.text(x, y, f"{y:.1f}%", ha='center', va='bottom')
+
     # 格式化
     ax.set_xlabel('故障现象', fontsize=12)
     ax.set_ylabel('故障数', color='tab:blue', fontsize=12)
+    ax2.set_ylabel('累计百分比 (%)', color='darkgray', fontsize=12)
+
 
     # 设置标题
     plt.title(f'{selected_series.split("(")[0]} 故障现象-Top10', fontsize=16)
 
     # 添加图例
     ax.legend(frameon=False, loc='upper right')
+    ax2.legend(frameon=False, loc='upper left')
 
     # 坐标轴45°设置
     plt.xticks(rotation=45, ha='right')  # 旋转 45°，并右对齐
     ax.set_xticks(range(len(fault_phenomenon_data['故障现象'])))  # 确保 X 轴刻度正确
     ax.set_xticklabels(fault_phenomenon_data['故障现象'], rotation=45, ha='right')
 
-    set_chart_style(ax, ax2, f'{selected_series.split("(")[0]} 故障现象 - Top10', '故障现象-不良增长', '', '')
-    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{int(x)}%'))  # Format Y-axis as percentage
+    set_chart_style(ax, ax2, f'{selected_series.split("(")[0]} 故障现象 - Top10', '', '', '')
+    ax2.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{int(x)}%'))  # Format Y-axis as percentage
 
     # 调整布局以适应图表
     plt.tight_layout()
@@ -865,7 +927,7 @@ if st.checkbox('显示筛选后的数据'):
     st.dataframe(filtered_df)
     if st.button('下载筛选后的数据'):
         try:
-            export_path = r'筛选后的数据_data.xlsx'
+            export_path = r'C:\Users\Administrator\Desktop\筛选后的数据_data.xlsx'
             filtered_df.to_excel(export_path, index=False)
             st.success(f'筛选后的数据已成功导出到 {export_path}')
         except Exception as e:
@@ -875,7 +937,7 @@ if st.checkbox('显示筛选后的数据'):
 if st.button('数据一键导出'):
     try:
         # 指定完整路径
-        export_path = r'数据信息_data.xlsx'
+        export_path = r'C:\Users\Administrator\Desktop\数据信息_data.xlsx'
         # 创建Excel文件
         with pd.ExcelWriter(export_path) as writer:
             # 月度故障 - AFR
