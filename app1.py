@@ -29,10 +29,10 @@ plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
 #####  运行 streamlit run C:\Users\11414\Desktop\PY\app1.py   --------------------------------------------------
 #####  运行 streamlit run C:\Users\Administrator\Desktop\PY\Streamlit苹果界面.py
 
+
 # 设置页面布局
 st.set_page_config(layout="wide")
 import streamlit as st
-
 
 # 初始化 session_state 中的 product_type
 if "product_type" not in st.session_state:
@@ -492,7 +492,7 @@ bars2 = ax1.bar([x + 0.2 for x in range(len(monthly_data['创建时间'].astype(
 # 为柱状图添加数据标签
 for bar in bars1:
     height = bar.get_height()
-    ax1.text(bar.get_x() + bar.get_width()/2., height/2, f'{height}',
+    ax1.text(bar.get_x() + bar.get_width()/2., height/2, f'{int(height)}',
              ha='center', va='center', color='black', fontfamily='Microsoft YaHei', fontweight='normal')
 
 for bar in bars2:
@@ -511,7 +511,7 @@ for x, y in zip(monthly_data['创建时间'].astype(str), (monthly_data['累计�
     ax2.text(x, y, f"{y:.2f}%", ha='center', va='bottom')  # 将标签位置调整为底部
 
 # 更新图表标题
-chart_title = f"{selected_series.split('(')[0]}-{selected_fault_tag if selected_fault_tag != '全选' else ''} 累计AFR".strip()
+chart_title = f"{selected_series.split('(')[0]}-{selected_fault_tag if selected_fault_tag != '全选' else ''}{'-' + selected_fault_location if selected_fault_location != '全选' else ''} 累计AFR".strip()
 
 # 设置图表样式
 set_chart_style(ax1, ax2, chart_title, '', '', '')
@@ -599,25 +599,14 @@ for bar in bars:
     height = bar.get_height()
     ax1.text(bar.get_x() + bar.get_width()/2., height/2, f'{height}',
              ha='center', va='center', color='black', fontfamily='Microsoft YaHei', fontweight='normal')
-# 在柱状图上方添加故障率数据
-for i, row in production_batch_data.iterrows():
-    fault_count = row['故障数']
-    cumulative_sales = row['累计销量']
-    if cumulative_sales > 0:  # 避免除以零
-        fault_rate = (fault_count / cumulative_sales) * 100
-        # 获取当前柱子的高度
-        bar_artist = bars[i]
-        bar_height = bar_artist.get_height()
-        # 将标签放置在柱子略上方，确保可见
-        label_position = bar_height + (ax1.get_ylim()[1] * 0.02 if ax1.get_ylim()[1] > 0 else 0.02) # 如果y轴上限为0则调整
-        ax1.text(i, label_position, f'{fault_rate:.2f}%', ha='center', va='bottom', color='red', fontfamily='Microsoft YaHei', fontweight='normal')
 
 # 将 X 轴刻度显式设置为唯一的生产批次
 ax1.set_xticks(range(len(production_batch_data['生产批次'])))  # 确保 X 轴刻度正确
 ax1.set_xticklabels(production_batch_data['生产批次'].astype(str), rotation=45, ha='right')  # 旋转 45°，右对齐
 
 # 动态设置图表标题
-chart_title = f"{selected_series.split('(')[0]}-{selected_fault_tag if selected_fault_tag != '全选' else ''} 批次不良图".strip()
+chart_title = f"{selected_series.split('(')[0]}-{selected_fault_tag if selected_fault_tag != '全选' else ''}{'-' + selected_fault_location if selected_fault_location != '全选' else ''} 批次不良图".strip()
+
 set_chart_style(ax1, ax1, chart_title, '', '', '')
 
 # 计算累计故障数的均值
@@ -628,14 +617,13 @@ ax1.axhline(mean_cumulative_faults, color='darkgray', linestyle='--', label='批
 ax1.legend(frameon=False)
 
 proxy_production_batch = matplotlib.patches.Patch(color='tab:blue', alpha=0.6) # 代表蓝色柱子
-proxy_fault_rate_text = matplotlib.lines.Line2D([], [], color='red', linestyle='None', marker='_', markersize=10, markeredgewidth=1.5) # 代表红色故障率文本
 
 # 图表底部图例的句柄和标签
-fig_legend_handles = [proxy_production_batch, proxy_fault_rate_text]
-fig_legend_labels = ['生产批次（周数）', '批次故障率']
+fig_legend_handles = [proxy_production_batch]
+fig_legend_labels = ['生产批次（周数）']
 
-# 在图表的底部中心添加“-生产批次”和“-批次故障率”的图例
-fig2.legend(fig_legend_handles, fig_legend_labels, loc='lower center', ncol=2, bbox_to_anchor=(0.5, -0.05), frameon=False)
+# 在图表的底部中心添加"-生产批次"的图例
+fig2.legend(fig_legend_handles, fig_legend_labels, loc='lower center', ncol=1, bbox_to_anchor=(0.5, -0.05), frameon=False)
 st.pyplot(fig2)
 
 
@@ -922,12 +910,88 @@ else:
 
 
 
+# 月度费用损失分析 ------------------------------------------------------------------------------------------------------
+
+st.subheader("售后费用损失预估")
+
+# 添加密码输入框，并靠左对齐
+col1, _ = st.columns([1, 3])  # 第一列占1/4宽度，第二列占3/4宽度
+with col1:
+    password = st.text_input("请输入密码以查看费用损失预估", type="password")
+
+# 检查密码是否正确
+if password == "1123":
+    # 隐藏密码输入框
+    st.empty()  # 清空密码输入框
+
+    # 在费用损失预估后增加物料价格输入框
+    material_cost = st.number_input("输入物料价格", min_value=0.0, value=0.0, step=0.01)
+
+    # 修改数据处理逻辑
+    def calculate_cost_loss(df, material_cost):
+        # 检查服务工单类型是否包含"修"字符
+        df['费用损失'] = df.apply(lambda row: row['费用损失'] + material_cost if '修' in row['服务工单类型'] else row['费用损失'], axis=1)
+        return df
+
+    # 在加载数据后调用该函数
+    filtered_df_no_ux = calculate_cost_loss(filtered_df_no_ux, material_cost)
+
+    # 直接使用过滤后的数据
+    filtered_df_no_ux = filtered_df
+
+    # 按创建时间分组并计算费用损失的总和
+    monthly_cost_data = filtered_df_no_ux.groupby('创建时间').agg(
+        费用损失=('费用损失', 'sum')
+    ).reset_index()
+
+    # 计算整体费用损失的平均值
+    average_cost = monthly_cost_data['费用损失'].mean()
+
+    # 设置柱子的颜色
+    colors = ['tab:red' if cost > average_cost * 1.3 else 'tab:blue' for cost in monthly_cost_data['费用损失']]
+
+    # 创建图表
+    fig_cost, ax1 = plt.subplots(figsize=(12, 5))
+
+    # 绘制当前月费用损失柱状图，调整颜色为蓝色
+    bars1 = ax1.bar(monthly_cost_data['创建时间'].astype(str), monthly_cost_data['费用损失'], color='tab:blue', alpha=0.6, label=None)
+
+    # 为柱状图添加数据标签
+    for bar in bars1:
+        height = bar.get_height()
+        ax1.text(bar.get_x() + bar.get_width()/2., height/2, f'{int(height)}',
+                 ha='center', va='center', color='black', fontfamily='Microsoft YaHei', fontweight='normal')
+
+    # 更新费用损失图表标题
+    cost_chart_title = f"{selected_series.split('(')[0]}-{selected_fault_tag if selected_fault_tag != '全选' else ''}{'-' + selected_fault_location if selected_fault_location != '全选' else ''} 月度费用损失".strip()
+
+    # 设置图表样式
+    set_chart_style(ax1, ax1, cost_chart_title, '', '费用损失', '')
+
+    # 添加红色虚线表示累计费用损失的均值
+    ax1.axhline(average_cost, color='darkgray', linestyle='--', label='费用损失均线')
+    ax1.legend(frameon=False)
+
+    # 调整布局以适应图表
+    plt.tight_layout()
+
+    # 显示图表
+    st.pyplot(fig_cost)
+else:
+    if password:  # 仅在用户输入了密码但错误时显示警告
+        st.warning("密码错误，无法查看费用损失预估。")
+
+
+
+
+
+
 # 显示筛选后的数据选项
 if st.checkbox('显示筛选后的数据'):
     st.dataframe(filtered_df)
     if st.button('下载筛选后的数据'):
         try:
-            export_path = r'C:\Users\Administrator\Desktop\筛选后的数据_data.xlsx'
+            export_path = r'筛选后的数据_data.xlsx'
             filtered_df.to_excel(export_path, index=False)
             st.success(f'筛选后的数据已成功导出到 {export_path}')
         except Exception as e:
@@ -937,7 +1001,7 @@ if st.checkbox('显示筛选后的数据'):
 if st.button('数据一键导出'):
     try:
         # 指定完整路径
-        export_path = r'C:\Users\Administrator\Desktop\数据信息_data.xlsx'
+        export_path = r'数据信息_data.xlsx'
         # 创建Excel文件
         with pd.ExcelWriter(export_path) as writer:
             # 月度故障 - AFR
