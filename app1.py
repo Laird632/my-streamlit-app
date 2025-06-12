@@ -6,6 +6,7 @@ import pandas as pd  # Add this line
 matplotlib.use('Agg')  # 在导入 pyplot 前设置
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
+from matplotlib import font_manager as fm 
 from openai import OpenAI
 import base64
 import  json
