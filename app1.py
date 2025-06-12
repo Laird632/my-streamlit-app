@@ -1,3 +1,4 @@
+import polars as pl
 import streamlit as st
 import matplotlib
 import os
