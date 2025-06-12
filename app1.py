@@ -19,6 +19,8 @@ rcParams['axes.spines.right'] = False
 
 # 设置全局字体
 plt.rcParams['font.family'] = 'Microsoft YaHei'
+rcParams['axes.spines.top'] = False
+rcParams['axes.spines.right'] = False
 plt.rcParams['axes.unicode_minus'] = False
 
 # 在图表库中直接设置支持的中文字体   暂定---------------------------------
