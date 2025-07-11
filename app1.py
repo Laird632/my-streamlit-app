@@ -267,44 +267,6 @@ if not st.session_state.logged_in:
 
 
 
-from openai import OpenAI
-
-# 初始化 OpenRouter 客户端
-client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key="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",
-    default_headers={
-        "HTTP-Referer": "https://yourdomain.com",  # 可选
-        "X-Title": "My AI App"
-    }
-)
-
-# Streamlit 页面标题
-st.title("🧠 聊一聊：DeepSeek Chat")
-
-# 用户输入框
-user_input = st.text_area("请输入你的问题：", height=100)
-
-# 提交按钮
-if st.button("发送"):
-    if user_input.strip() == "":
-        st.warning("请输入一些内容再发送。")
-    else:
-        with st.spinner("AI 正在思考中..."):
-            try:
-                response = client.chat.completions.create(
-                    model="deepseek/deepseek-chat:free",  # ✅ 替换为真实有效模型 ID
-                    messages=[
-                        {"role": "system", "content": "你是一个中文 AI 助手，回答简洁、准确、有逻辑。"},
-                        {"role": "user", "content": user_input}
-                    ],
-                    timeout=60
-                )
-                reply = response.choices[0].message.content
-                st.markdown("### 🤖 AI 回答：")
-                st.write(reply)
-            except Exception as e:
-                st.error(f"出错了：{e}")
 
 
 # 读取故障码查询文件--------------------------------------------------------------------------------------------------
