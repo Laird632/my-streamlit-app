@@ -240,6 +240,71 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
+# 登录界面--------------------------------------------------------------------------------------------------------------------------
+def login():
+    st.markdown('<div class="login-container">', unsafe_allow_html=True)
+    st.markdown('<div class="login-title">登录</div>', unsafe_allow_html=True)
+
+    username = st.text_input('账号', key='username_input', placeholder='请输入您的账号')
+    password = st.text_input('密码', type='password', key='password_input', placeholder='请输入您的密码')
+
+    if st.button('登录', key='login_button'):
+        if username == 'Roborock' and password == '123456':
+            st.session_state.logged_in = True
+            st.rerun()
+        else:
+            st.error('账号或密码错误')
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+if 'logged_in' not in st.session_state:
+    st.session_state.logged_in = False
+
+if not st.session_state.logged_in:
+    login()
+    st.stop()
+
+
+
+
+from openai import OpenAI
+
+# 初始化 OpenRouter 客户端
+client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key="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",
+    default_headers={
+        "HTTP-Referer": "https://yourdomain.com",  # 可选
+        "X-Title": "My AI App"
+    }
+)
+
+# Streamlit 页面标题
+st.title("🧠 聊一聊：DeepSeek Chat")
+
+# 用户输入框
+user_input = st.text_area("请输入你的问题：", height=100)
+
+# 提交按钮
+if st.button("发送"):
+    if user_input.strip() == "":
+        st.warning("请输入一些内容再发送。")
+    else:
+        with st.spinner("AI 正在思考中..."):
+            try:
+                response = client.chat.completions.create(
+                    model="deepseek/deepseek-chat:free",  # ✅ 替换为真实有效模型 ID
+                    messages=[
+                        {"role": "system", "content": "你是一个中文 AI 助手，回答简洁、准确、有逻辑。"},
+                        {"role": "user", "content": user_input}
+                    ],
+                    timeout=60
+                )
+                reply = response.choices[0].message.content
+                st.markdown("### 🤖 AI 回答：")
+                st.write(reply)
+            except Exception as e:
+                st.error(f"出错了：{e}")
 
 
 # 读取故障码查询文件--------------------------------------------------------------------------------------------------
