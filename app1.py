@@ -39,7 +39,6 @@ plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
 
 # 设置页面布局
 st.set_page_config(layout="wide")
-import streamlit as st
 
 # 初始化 session_state 中的 product_type
 if "product_type" not in st.session_state:
