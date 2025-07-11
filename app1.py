@@ -1,11 +1,15 @@
-import pandas as pd
+import polars as pl
 import streamlit as st
 import matplotlib
 import os
+import pandas as pd  # Add this line
 matplotlib.use('Agg')  # 在导入 pyplot 前设置
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
-from matplotlib import font_manager as fm
+from openai import OpenAI
+import base64
+import  json
+import traceback
 
 # 指定字体路径
 font_path = 'msyh.ttf'  # 确保路径正确，如果文件在子目录中，请提供相对路径
@@ -330,6 +334,15 @@ with st.sidebar:
     
     if selected_fault_tag != '全选':
         filtered_df = filtered_df[filtered_df['故障部位标签'] == selected_fault_tag]
+
+
+    # 故障部位筛选（按数量排序）
+    #fault_location_options = ['全选'] + filtered_df['故障部位'].value_counts().index.tolist()
+    #selected_fault_location = st.selectbox("故障部位", fault_location_options)
+    
+    #if selected_fault_location != '全选':
+    #    filtered_df = filtered_df[filtered_df['故障部位'] == selected_fault_location]
+        
     
     # 故障现象筛选（按数量排序）
     fault_location_options = ['全选'] + filtered_df['故障现象'].value_counts().index.tolist()
@@ -411,28 +424,36 @@ with st.sidebar:
         </style>
     """, unsafe_allow_html=True)
     
-    fault_code_input = st.text_input("输入故障码（支持模糊查询）")
-    if fault_code_input:
-        df_fault_codes = load_fault_codes()
-        if not df_fault_codes.empty:
-            # 进行模糊查询
-            filtered_codes = df_fault_codes[df_fault_codes['故障码'].astype(str).str.contains(fault_code_input, case=False, na=False)]
-            if not filtered_codes.empty:
-                for _, row in filtered_codes.iterrows():
-                    st.write(f"故障码: {row['故障码']}")
-                    st.write(f"故障原理分析: {row['故障原理分析']}")
-                    st.write("---")
-            else:
-                st.warning("未找到匹配的故障码")
+    # 在侧边栏增加故障码查询开关
+    show_fault_code_query = st.checkbox("故障码查询", value=False)
 
-    # 在侧边栏增加产品质量报告查询按钮
-    # Keep the dropdown for selecting the report in the sidebar
-    quality_report_path = r"产品质量报告"
-    report_folders = ['关闭查询'] + [folder for folder in os.listdir(quality_report_path) if os.path.isdir(os.path.join(quality_report_path, folder))]
-    selected_report = st.selectbox("质量分析报告查询", report_folders)
+    # 仅在复选框被选中时显示故障码查询功能
+    if show_fault_code_query:
+        fault_code_input = st.text_input("输入故障码（支持模糊查询）")
+        if fault_code_input:
+            df_fault_codes = load_fault_codes()
+            if not df_fault_codes.empty:
+                # 进行模糊查询
+                filtered_codes = df_fault_codes[df_fault_codes['故障码'].astype(str).str.contains(fault_code_input, case=False, na=False)]
+                if not filtered_codes.empty:
+                    for _, row in filtered_codes.iterrows():
+                        st.write(f"故障码: {row['故障码']}")
+                        st.write(f"故障原理分析: {row['故障原理分析']}")
+                        st.write("---")
+                else:
+                    st.warning("未找到匹配的故障码")
+
+    # 在侧边栏增加质量分析报告查询开关
+    show_quality_report = st.checkbox("质量报告查询", value=False)
+
+    # 仅在复选框被选中时显示质量分析报告查询功能
+    if show_quality_report:
+        quality_report_path = r"产品质量报告"
+        report_folders = [folder for folder in os.listdir(quality_report_path) if os.path.isdir(os.path.join(quality_report_path, folder))]
+        selected_report = st.selectbox("报告查询", report_folders)
 
 # 新增：在主页面显示质量报告
-if selected_report != '关闭查询':  # Check if a report is selected and not the empty option
+if show_quality_report:  # 仅在复选框被选中时显示
     report_images_path = os.path.join(quality_report_path, selected_report)
     # 获取所有 PNG 图片
     report_images = [img for img in os.listdir(report_images_path) if img.endswith('.png')]
@@ -582,51 +603,6 @@ ax1.set_xticklabels(weekly_data['故障周数'].astype(str), rotation=45, ha='ri
 # st.pyplot(fig2)
 
 
-# 生产批次故障不良 --------------------------------------------------------------------------------------------------------
-st.subheader("生产批次-不良监控")
-production_batch_data = filtered_df.groupby('生产批次').agg(
-    故障数=('故障数', 'count'),
-    累计销量=('累计销量', 'first')
-).reset_index()
-production_batch_data['AFR'] = (production_batch_data['故障数'] / production_batch_data['累计销量']) * 100
-
-# 计算整体故障数的平均值
-average_faults = production_batch_data['故障数'].mean()
-# 设置柱子的颜色
-colors = ['tab:red' if count > average_faults * 1.7 else 'tab:blue' for count in production_batch_data['故障数']]
-
-fig2, ax1 = plt.subplots(figsize=(12, 5))
-bars = ax1.bar(production_batch_data['生产批次'].astype(str), production_batch_data['故障数'], color=colors, alpha=0.6, label=None)
-for bar in bars:
-    height = bar.get_height()
-    ax1.text(bar.get_x() + bar.get_width()/2., height/2, f'{height}',
-             ha='center', va='center', color='black', fontfamily='Microsoft YaHei', fontweight='normal')
-
-# 将 X 轴刻度显式设置为唯一的生产批次
-ax1.set_xticks(range(len(production_batch_data['生产批次'])))  # 确保 X 轴刻度正确
-ax1.set_xticklabels(production_batch_data['生产批次'].astype(str), rotation=45, ha='right')  # 旋转 45°，右对齐
-
-# 动态设置图表标题
-chart_title = f"{selected_series.split('(')[0]}-{selected_fault_tag if selected_fault_tag != '全选' else ''}{'-' + selected_fault_location if selected_fault_location != '全选' else ''} 批次不良图".strip()
-
-set_chart_style(ax1, ax1, chart_title, '', '', '')
-
-# 计算累计故障数的均值
-mean_cumulative_faults = production_batch_data['故障数'].mean()
-
-# 添加红色虚线表示累计故障数的均值
-ax1.axhline(mean_cumulative_faults, color='darkgray', linestyle='--', label='批次不良均线')
-ax1.legend(frameon=False)
-
-proxy_production_batch = matplotlib.patches.Patch(color='tab:blue', alpha=0.6) # 代表蓝色柱子
-
-# 图表底部图例的句柄和标签
-fig_legend_handles = [proxy_production_batch]
-fig_legend_labels = ['生产批次（周数）']
-
-# 在图表的底部中心添加"-生产批次"的图例
-fig2.legend(fig_legend_handles, fig_legend_labels, loc='lower center', ncol=1, bbox_to_anchor=(0.5, -0.05), frameon=False)
-st.pyplot(fig2)
 
 
 
@@ -909,95 +885,178 @@ else:
     # 显示图表
     st.pyplot(fig4)
 
+# 生产批次故障不良 --------------------------------------------------------------------------------------------------------
+st.subheader("生产批次-不良监控")
+production_batch_data = filtered_df.groupby('生产批次').agg(
+    故障数=('故障数', 'count'),
+    累计销量=('累计销量', 'first')
+).reset_index()
+production_batch_data['AFR'] = (production_batch_data['故障数'] / production_batch_data['累计销量']) * 100
+
+# 计算整体故障数的平均值
+average_faults = production_batch_data['故障数'].mean()
+# 设置柱子的颜色
+colors = ['tab:red' if count > average_faults * 1.7 else 'tab:blue' for count in production_batch_data['故障数']]
+
+fig2, ax1 = plt.subplots(figsize=(12, 5))
+bars = ax1.bar(production_batch_data['生产批次'].astype(str), production_batch_data['故障数'], color=colors, alpha=0.6, label=None)
+for bar in bars:
+    height = bar.get_height()
+    ax1.text(bar.get_x() + bar.get_width()/2., height/2, f'{height}',
+             ha='center', va='center', color='black', fontfamily='Microsoft YaHei', fontweight='normal')
+
+# 将 X 轴刻度显式设置为唯一的生产批次
+ax1.set_xticks(range(len(production_batch_data['生产批次'])))  # 确保 X 轴刻度正确
+ax1.set_xticklabels(production_batch_data['生产批次'].astype(str), rotation=45, ha='right')  # 旋转 45°，右对齐
+
+# 动态设置图表标题
+chart_title = f"{selected_series.split('(')[0]}-{selected_fault_tag if selected_fault_tag != '全选' else ''}{'-' + selected_fault_location if selected_fault_location != '全选' else ''} 批次不良图".strip()
+
+set_chart_style(ax1, ax1, chart_title, '', '', '')
+
+# 计算累计故障数的均值
+mean_cumulative_faults = production_batch_data['故障数'].mean()
+
+# 添加红色虚线表示累计故障数的均值
+ax1.axhline(mean_cumulative_faults, color='darkgray', linestyle='--', label='批次不良均线')
+ax1.legend(frameon=False)
+
+proxy_production_batch = matplotlib.patches.Patch(color='tab:blue', alpha=0.6) # 代表蓝色柱子
+
+# 图表底部图例的句柄和标签
+fig_legend_handles = [proxy_production_batch]
+fig_legend_labels = ['生产批次（周数）']
+
+# 在图表的底部中心添加"-生产批次"的图例
+fig2.legend(fig_legend_handles, fig_legend_labels, loc='lower center', ncol=1, bbox_to_anchor=(0.5, -0.05), frameon=False)
+st.pyplot(fig2)
 
 
+
+# 在侧边栏增加费用损失分析开关
+with st.sidebar:
+    show_cost_analysis = st.checkbox("费用损失查询", value=False)
 
 # 月度费用损失分析 ------------------------------------------------------------------------------------------------------
+if show_cost_analysis:
+    st.subheader("费用损失查询")
 
-st.subheader("售后费用损失预估")
+    # 添加密码输入框，并靠左对齐
+    col1, _ = st.columns([1, 3])  # 第一列占1/4宽度，第二列占3/4宽度
+    with col1:
+        password = st.text_input("请输入密码", type="password")
 
-# 添加密码输入框，并靠左对齐
-col1, _ = st.columns([1, 3])  # 第一列占1/4宽度，第二列占3/4宽度
-with col1:
-    password = st.text_input("请输入密码以查看费用损失预估", type="password")
+    # 检查密码是否正确
+    if password == "1123":
+        # 隐藏密码输入框
+        st.empty()  # 清空密码输入框
 
-# 检查密码是否正确
-if password == "1123":
-    # 隐藏密码输入框
-    st.empty()  # 清空密码输入框
+        # 在费用损失预估后增加物料价格输入框
+        material_cost = st.number_input("输入物料价格", min_value=0.0, value=0.0, step=0.01)
 
-    # 在费用损失预估后增加物料价格输入框
-    material_cost = st.number_input("输入物料价格", min_value=0.0, value=0.0, step=0.01)
+        # 修改数据处理逻辑
+        def calculate_cost_loss(df, material_cost):
+            # 检查服务工单类型是否包含"修"字符
+            df['费用损失'] = df.apply(lambda row: row['费用损失'] + material_cost if '修' in row['服务工单类型'] else row['费用损失'], axis=1)
+            return df
 
-    # 修改数据处理逻辑
-    def calculate_cost_loss(df, material_cost):
-        # 检查服务工单类型是否包含"修"字符
-        df['费用损失'] = df.apply(lambda row: row['费用损失'] + material_cost if '修' in row['服务工单类型'] else row['费用损失'], axis=1)
-        return df
+        # 在加载数据后调用该函数
+        filtered_df_no_ux = calculate_cost_loss(filtered_df_no_ux, material_cost)
 
-    # 在加载数据后调用该函数
-    filtered_df_no_ux = calculate_cost_loss(filtered_df_no_ux, material_cost)
+        # 直接使用过滤后的数据
+        filtered_df_no_ux = filtered_df
 
-    # 直接使用过滤后的数据
-    filtered_df_no_ux = filtered_df
+        # 按创建时间分组并计算费用损失的总和
+        monthly_cost_data = filtered_df_no_ux.groupby('创建时间').agg(
+            费用损失=('费用损失', 'sum'),
+            累计销量=('累计销量', 'first')
+        ).reset_index()
 
-    # 按创建时间分组并计算费用损失的总和
-    monthly_cost_data = filtered_df_no_ux.groupby('创建时间').agg(
-        费用损失=('费用损失', 'sum')
-    ).reset_index()
+        # 计算累计费用损失
+        monthly_cost_data['累计费用损失'] = monthly_cost_data['费用损失'].cumsum()
 
-    # 计算整体费用损失的平均值
-    average_cost = monthly_cost_data['费用损失'].mean()
+        # 计算销售月份数
+        sales_months = len(monthly_cost_data['创建时间'].unique())
 
-    # 设置柱子的颜色
-    colors = ['tab:red' if cost > average_cost * 1.3 else 'tab:blue' for cost in monthly_cost_data['费用损失']]
+        # 计算单台费用损失预估（1年）
+        estimated_cost_per_unit = (monthly_cost_data['累计费用损失'].iloc[-1] / monthly_cost_data['累计销量'].iloc[-1]) * (12 / sales_months)
 
-    # 创建图表
-    fig_cost, ax1 = plt.subplots(figsize=(12, 5))
+        # 创建图表
+        fig_cost, ax1 = plt.subplots(figsize=(12, 5))
+        
+        # 创建次坐标轴
+        ax2 = ax1.twinx()
 
-    # 绘制当前月费用损失柱状图，调整颜色为蓝色
-    bars1 = ax1.bar(monthly_cost_data['创建时间'].astype(str), monthly_cost_data['费用损失'], color='tab:blue', alpha=0.6, label=None)
+        # 绘制当前月费用损失柱状图（左侧偏移）
+        x = range(len(monthly_cost_data['创建时间'].astype(str)))  # 使用数字序列作为X轴基础
+        bars1 = ax1.bar([i - 0.2 for i in x], 
+                        monthly_cost_data['费用损失'], 
+                        color='tab:blue', 
+                        alpha=0.6, 
+                        width=0.4,
+                        label='月度费用损失')
 
-    # 为柱状图添加数据标签
-    for bar in bars1:
-        height = bar.get_height()
-        ax1.text(bar.get_x() + bar.get_width()/2., height/2, f'{int(height)}',
-                 ha='center', va='center', color='black', fontfamily='Microsoft YaHei', fontweight='normal')
+        # 绘制累计费用损失柱状图（右侧偏移）
+        bars2 = ax1.bar([i + 0.2 for i in x], 
+                        monthly_cost_data['累计费用损失'], 
+                        color='tab:orange', 
+                        alpha=0.6, 
+                        width=0.4,
+                        label='累计费用损失')
 
-    # 更新费用损失图表标题
-    cost_chart_title = f"{selected_series.split('(')[0]}-{selected_fault_tag if selected_fault_tag != '全选' else ''}{'-' + selected_fault_location if selected_fault_location != '全选' else ''} 月度费用损失".strip()
+        # 为柱状图添加数据标签
+        for bar in bars1:
+            height = bar.get_height()
+            ax1.text(bar.get_x() + bar.get_width()/2., height/2, f'{int(height)}',
+                     ha='center', va='center', color='black', fontfamily='Microsoft YaHei', fontweight='normal')
 
-    # 设置图表样式
-    set_chart_style(ax1, ax1, cost_chart_title, '', '费用损失', '')
+        for bar in bars2:
+            height = bar.get_height()
+            ax1.text(bar.get_x() + bar.get_width()/2., height/2, f'{int(height)}',
+                     ha='center', va='center', color='black', fontfamily='Microsoft YaHei', fontweight='normal')
 
-    # 添加红色虚线表示累计费用损失的均值
-    ax1.axhline(average_cost, color='darkgray', linestyle='--', label='费用损失均线')
-    ax1.legend(frameon=False)
+        # 设置X轴标签为日期字符串
+        ax1.set_xticks(x)
+        ax1.set_xticklabels(monthly_cost_data['创建时间'].astype(str), rotation=45, ha='right')
 
-    # 调整布局以适应图表
-    plt.tight_layout()
+        # 更新费用损失图表标题
+        cost_chart_title = f"{selected_series.split('(')[0]}-{selected_fault_tag if selected_fault_tag != '全选' else ''}{'-' + selected_fault_location if selected_fault_location != '全选' else ''} 费用损失分析".strip()
 
-    # 显示图表
-    st.pyplot(fig_cost)
-else:
-    if password:  # 仅在用户输入了密码但错误时显示警告
-        st.warning("密码错误，无法查看费用损失预估。")
+        # 设置图表样式
+        plt.title(cost_chart_title, fontsize=16)
+        
+        # 添加X轴和Y轴箭头（与月度故障-AFR图表一致）
+        ax1.annotate('', xy=(1, 0), xytext=(0, 0),
+                    arrowprops=dict(arrowstyle='->', color='black', lw=0.8),
+                    xycoords='axes fraction', textcoords='axes fraction')
+        ax1.annotate('', xy=(0, 1), xytext=(0, 0),
+                    arrowprops=dict(arrowstyle='->', color='black', lw=0.8),
+                    xycoords='axes fraction', textcoords='axes fraction')
+        
+        plt.tight_layout()
+
+        # 在次坐标轴添加单台费用损失预估（1年）线
+        ax2.axhline(estimated_cost_per_unit, color='darkgray', linestyle='--', label='单台费用损失预估（1年）')
+        
+        # 在虚线上添加数值标签
+        ax2.text(0, estimated_cost_per_unit, f' {estimated_cost_per_unit:.2f}', 
+                ha='left', va='center', color='darkgray', fontsize=12,
+                bbox=dict(facecolor='white', alpha=0.7, edgecolor='none'))
+        
+        ax2.legend(frameon=False, loc='upper right')
+
+        # 添加图例
+        handles = [bars1, bars2]
+        labels = ['月度费用损失', '累计费用损失']
+        fig_cost.legend(handles, labels, loc='lower center', ncol=2, bbox_to_anchor=(0.5, -0.1), frameon=False)
+
+        # 显示图表
+        st.pyplot(fig_cost)
+    else:
+        if password:  # 仅在用户输入了密码但错误时显示警告
+            st.warning("密码错误，无法查看费用损失预估。")
 
 
-
-
-
-
-# 显示筛选后的数据选项
-if st.checkbox('显示筛选后的数据'):
-    st.dataframe(filtered_df)
-    if st.button('下载筛选后的数据'):
-        try:
-            export_path = r'筛选后的数据_data.xlsx'
-            filtered_df.to_excel(export_path, index=False)
-            st.success(f'筛选后的数据已成功导出到 {export_path}')
-        except Exception as e:
-            st.error(f'导出数据时出错: {e}')
 
 # 数据一键导出按钮
 if st.button('数据一键导出'):
@@ -1021,3 +1080,152 @@ if st.button('数据一键导出'):
         st.success(f'数据已成功导出到 {export_path}')
     except Exception as e:
         st.error(f'导出数据时出错: {e}')
+
+
+
+
+
+# 缓存 OpenRouter 客户端
+@st.cache_resource
+def get_openrouter_client():
+    return OpenAI(
+        base_url="https://openrouter.ai/api/v1",
+        api_key="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",
+        default_headers={
+        "HTTP-Referer": "https://yourdomain.com",
+        "X-Title": "DataAnalysisTool",  # 改为英文
+        "Content-Type": "application/json; charset=utf-8"
+}
+    )
+
+client = get_openrouter_client()
+
+# ✅ AI 分析函数
+def perform_ai_analysis():
+    try:
+        # 读取用户筛选条件（移除周数据）
+        筛选条件 = {
+            "产品系列": st.session_state.get("product_type", "未选择"),
+            "故障部位标签": st.session_state.get("selected_fault_tag", "未选择"),
+            "故障现象": st.session_state.get("selected_fault_location", "未选择")
+        }
+
+        # 直接从生成的图表数据中提取数据
+        数据表 = {}
+        
+        # 月度故障数据
+        if 'monthly_data' in globals():
+            数据表["月度故障数据"] = {
+                "X轴_创建时间": monthly_data['创建时间'].astype(str).tolist(),
+                "Y轴_当月返修": monthly_data['故障数'].tolist(),
+                "Y轴_累计返修": monthly_data['累计故障数'].tolist(),
+                "Y轴_累计AFR": (monthly_data['累计故障数'] / monthly_data['累计销量'] * 100).tolist(),
+            }
+        
+        # 生产批次故障数据
+        if 'production_batch_data' in globals():
+            数据表["生产批次故障数据"] = {
+                "X轴_生产批次": production_batch_data['生产批次'].astype(str).tolist(),
+                "Y轴_故障数": production_batch_data['故障数'].tolist(),
+                "Y轴_AFR": (production_batch_data['故障数'] / production_batch_data['累计销量'] * 100).tolist(),
+            }
+        
+        # 整机故障-Top10
+        if 'fault_tag_data' in globals():
+            数据表["整机故障-Top10"] = {
+                "X轴_故障部位标签": fault_tag_data['故障部位标签'].tolist(),
+                "Y轴_故障数": fault_tag_data['故障数'].tolist(),
+                "Y轴_AFR": (fault_tag_data['故障数'] / fault_tag_data['累计销量'] * 100).tolist(),
+            }
+        
+        # 桩故障-Top10（仅适用于扫地机器人）
+        if 'fault_phenomenon_data' in globals() and st.session_state.product_type == "产品_扫地机器人":
+            数据表["桩故障-Top10"] = {
+                "X轴_故障现象": fault_phenomenon_data['故障现象'].tolist(),
+                "Y轴_故障数": fault_phenomenon_data['故障数'].tolist(),
+                "Y轴_AFR": (fault_phenomenon_data['故障数'] / fault_phenomenon_data['累计销量'] * 100).tolist(),
+            }
+
+        # 故障现象-Top10
+        if 'fault_phenomenon_data' in globals():
+            数据表["故障现象-Top10"] = {
+                "X轴_故障现象": fault_phenomenon_data['故障现象'].tolist(),
+                "Y轴_故障数": fault_phenomenon_data['故障数'].tolist(),
+                "Y轴_AFR": (fault_phenomenon_data['故障数'] / fault_phenomenon_data['累计销量'] * 100).tolist(),
+            }
+
+        # ✅ 构建 prompt（移除周数据相关提示）
+        prompt = f"""你是一名高级产品质量专家，专注于消费类智能硬件，长期负责扫地机与洗地机产品的质量数据分析、风险管控和改进策略制定。
+
+你将收到筛选条件与图表数据，请输出一份语言简洁、精准、专业的质量分析报告，供管理层或项目负责人参考。
+提示：
+1. 你接收到的AFR的数据比如0.942 代表0.942% 不是94.2%，已包含百分数。
+2. 累计百分比数据 比如第一个数据 吸水风机 36.9 代表 36.9% ，第二个数据 滚刷齿轮箱 48.7 代表 48.7% 
+代表吸水风机加上滚刷齿轮箱的累计百分比是 48.7% ，实际滚刷齿轮箱的累计百分比是 48.7% - 36.9% = 11.8% ，已包含百分数。
+
+【分析原则】
+- 只输出关键结论，不做冗余描述；
+- 直达问题核心，提炼有价值的发现；
+- 强调问题的业务影响和可执行建议；
+- 风格冷静、专业，不使用口语化语气。
+
+【筛选条件】
+{json.dumps(筛选条件, ensure_ascii=False, indent=2)}
+
+【图表数据】
+"""
+        for 名称, 数据 in 数据表.items():
+            if 数据:
+                prompt += f"\n【{名称}】\n{json.dumps(数据, ensure_ascii=False, indent=2)}\n"
+
+        prompt += """
+
+【输出格式】
+请严格按照以下结构输出一份中文质量分析报告，语言简洁、逻辑清晰，不做冗余描述：
+
+---
+
+### 📌 数据分析报告：
+
+1. ✅ 核心结论  
+（高度提炼的 1～3 条核心问题，限 300 字内）
+
+2. ⚠️ 风险聚焦  
+（指出主要业务风险的故障模式、批次、产品系列，支持数据引用）
+
+3. 🔧 改善建议 
+（提出可执行的改进措施，优先级明确，数量不超过 3 条）
+
+---
+
+立即输出分析报告。
+"""
+
+        # ✅ 发起 AI 请求
+        response = client.chat.completions.create(
+            model="deepseek/deepseek-chat:free",  # 可自定义模型
+            messages=[
+                {"role": "system", "content": "你是资深质量分析专家，擅长从数据中发现产品问题"},
+                {"role": "user", "content": prompt}
+            ]
+        )
+
+        return response.choices[0].message.content
+
+    except Exception as e:
+        return f"❌ 分析失败：{traceback.format_exc()}"
+
+# ✅ 侧边栏分析按钮
+with st.sidebar:
+    if st.button("🚀 AI数据分析", help="基于当前筛选结果生成分析报告", key="ai_analysis_button"):
+        with st.spinner("AI 分析中，请稍候..."):
+            analysis_result = perform_ai_analysis()
+            st.session_state.analysis_result = analysis_result
+
+# ✅ 显示分析结果
+if "analysis_result" in st.session_state:
+    st.markdown(st.session_state.analysis_result)
+
+
+
+    
