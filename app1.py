@@ -10,6 +10,7 @@ from openai import OpenAI
 import base64
 import  json
 import traceback
+import matplotlib.font_manager as fm
 
 # 指定字体路径
 font_path = 'msyh.ttf'  # 确保路径正确，如果文件在子目录中，请提供相对路径
