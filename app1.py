@@ -345,7 +345,7 @@ st.markdown(f"""
 
 
 # 读取故障码查询文件--------------------------------------------------------------------------------------------------
-fault_code_path = r"售后数据处理\故障码查询.xlsx"
+fault_code_path = r"故障码查询.xlsx"
 @st.cache_data
 def load_fault_codes():
     try:
