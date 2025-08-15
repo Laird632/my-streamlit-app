@@ -324,7 +324,7 @@ div[data-testid="stButton"] {
 import base64
 
 # 将图片转换为 Base64 编码
-with open('C:\\\\Users\\\\Administrator\\\\Desktop\\\\PY\\\\logo.png', 'rb') as img_file:
+with open('logo.png', 'rb') as img_file:
     encoded_string = base64.b64encode(img_file.read()).decode('utf-8')
 
 st.markdown(f"""
