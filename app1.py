@@ -13,11 +13,7 @@ import matplotlib.font_manager as fm
 from scipy.interpolate import make_interp_spline
 import numpy as np
 
-# 指定字体路径
-font_path = 'msyh.ttf'  # 确保路径正确，如果文件在子目录中，请提供相对路径
-
-# 加载字体
-fm.fontManager.addfont(font_path)
+rcParams['font.family'] = 'Microsoft YaHei'
 
 # 全局设置：删除 X 轴上面的黑色横线和 Y 轴右边的黑色竖线
 rcParams['axes.spines.top'] = False
