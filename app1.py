@@ -1,7 +1,7 @@
 import streamlit as st
 import matplotlib
 import os
-import pandas as pd  # Add this line
+import pandas as pd
 matplotlib.use('Agg')  # 在导入 pyplot 前设置
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
@@ -9,30 +9,19 @@ from openai import OpenAI
 import base64
 import  json
 import traceback
-import matplotlib.font_manager as fm
 from scipy.interpolate import make_interp_spline
 import numpy as np
+
 
 rcParams['font.family'] = 'Microsoft YaHei'
 
 # 全局设置：删除 X 轴上面的黑色横线和 Y 轴右边的黑色竖线
 rcParams['axes.spines.top'] = False
-rcParams['axes.spines.right'] = False
-
-# 设置全局字体
-plt.rcParams['font.family'] = 'Microsoft YaHei'
-rcParams['axes.spines.top'] = False
-rcParams['axes.spines.right'] = False
-plt.rcParams['axes.unicode_minus'] = False
+rcParams['axes.spines.right'] = False 
 
 # 在图表库中直接设置支持的中文字体   暂定---------------------------------
 plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 指定黑体
 plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
-
-
-#####  运行 streamlit run C:\Users\11414\Desktop\PY\app1.py   --------------------------------------------------
-#####  运行 streamlit run C:\Users\Administrator\Desktop\PY\Streamlit苹果界面.py
-
 
 # 设置页面布局
 st.set_page_config(layout="wide")
@@ -320,7 +309,7 @@ div[data-testid="stButton"] {
 import base64
 
 # 将图片转换为 Base64 编码
-with open('logo.png', 'rb') as img_file:
+with open('C:\\\\Users\\\\Administrator\\\\Desktop\\\\PY\\\\logo.png', 'rb') as img_file:
     encoded_string = base64.b64encode(img_file.read()).decode('utf-8')
 
 st.markdown(f"""
