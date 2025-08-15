@@ -404,6 +404,16 @@ with st.sidebar:
         if st.button("🧼洗地机"):
             st.session_state.product_type = "产品_家用洗地机"
 
+
+# 初始化会话状态（如果不存在）
+if 'product_type' not in st.session_state:
+    st.session_state.product_type = "产品_扫地机器人"
+
+# 确保数据已成功加载
+if df_robot is None or df_cleaner is None:
+    st.stop()
+
+
 # 根据选择获取当前数据框
 if st.session_state.product_type == "产品_扫地机器人":
     df = df_robot.copy()
